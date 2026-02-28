@@ -5,4 +5,6 @@ export interface Persona {
   genero: string;
   tipoDiscapacidad: string;
   sector: string;
+  latitud: number;
+  longitud: number;
 }

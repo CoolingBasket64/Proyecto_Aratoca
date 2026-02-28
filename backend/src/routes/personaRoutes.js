@@ -9,7 +9,9 @@ router.get("/", (req, res) => {
       edad: 30,
       genero: "Masculino",
       tipoDiscapacidad: "Visual",
-      sector: "Centro"
+      sector: "Centro",
+      latitud: 6.6996,
+      longitud: -73.0181,
     },
     {
       id: 2,
@@ -17,7 +19,9 @@ router.get("/", (req, res) => {
       edad: 25,
       genero: "Femenino",
       tipoDiscapacidad: "Auditiva",
-      sector: "Norte"
+      sector: "Norte",
+      latitud: 6.701,
+      longitud: -73.020,
     }
   ]);
 });
