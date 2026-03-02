@@ -5,19 +5,21 @@ html, body, #root {
 
 .app-container {
   display: flex;
-  height: 100%;
-  width: 100vh;
+  height: 100vh;
+  width: 100%;
 }
 
 .mapa-container {
-  flex: 10;
-  width: 50%;
+  flex: 1;
+  height: 100%;
 }
 
 .panel-container {
-  flex: auto;
-  padding: 10px;
-  background-color: #31a6d4;
+  width: 320px;
+  height: 100%;
+  background-color: #2e8ca8;
+  padding: 20px;
+  color: white;
   overflow-y: auto;
 }
 
@@ -25,4 +27,3 @@ html, body, #root {
   height: 100%;
   width: 100%;
 }
-
