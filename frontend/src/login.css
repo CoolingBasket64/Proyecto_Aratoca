@@ -1,0 +1,62 @@
+/* Fondo de toda la página */
+.login-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f5f9;
+}
+
+/* Tarjeta del login */
+.login-card {
+  width: 320px;
+  padding: 35px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Título */
+.login-card h2 {
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+/* Inputs */
+.login-card input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+/* Botón ingresar */
+.login-card button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-card button:hover {
+  background: #1e40af;
+}
+
+/* Botón volver */
+.btn-volver {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.btn-volver:hover {
+  background: #d1d5db;
+}
