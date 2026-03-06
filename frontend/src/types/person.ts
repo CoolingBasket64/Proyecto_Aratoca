@@ -1,9 +1,9 @@
 export interface Persona {
-  id: number;
-  nombre: string;
+  id_persona: number;
+  nombre_completo: string;
   edad: number;
-  genero: string;
-  tipoDiscapacidad: string;
+  sexo: string;
+  discapacidad: string;
   sector: string;
   latitud: number;
   longitud: number;

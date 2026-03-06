@@ -39,15 +39,24 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {personas.map((persona) => (
-        <Marker
-          key={persona.id}
-          position={[Number(persona.latitud), Number(persona.longitud)]}
-          eventHandlers={{
-            click: () => onSelectPersona(persona),
-          }}
-        />
-      ))}
+      {personas
+        .filter(
+          (persona) =>
+            persona.latitud !== null &&
+            persona.longitud !== null &&
+            !isNaN(Number(persona.latitud)) &&
+            !isNaN(Number(persona.longitud))
+        )
+        .map((persona) => (
+          <Marker
+            key={persona.id_persona}
+            position={[Number(persona.latitud), Number(persona.longitud)]}
+            eventHandlers={{
+              click: () => onSelectPersona(persona),
+            }}
+          />
+        ))}
+
 
     </MapContainer>
   );

@@ -70,6 +70,30 @@ html, body, #root {
   border-radius: 10px;
 }
 
+.select-discapacidad{
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+
+  border-radius: 6px;
+  border: 1px solid #94a3b8;
+  background: white;
+  font-size: 14px;
+  color: black;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-discapacidad:hover{
+  border-color: #3b82f6;
+}
+
+.select-discapacidad:focus{
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
 /* responsive */
 
 @media (max-width: 900px) {
