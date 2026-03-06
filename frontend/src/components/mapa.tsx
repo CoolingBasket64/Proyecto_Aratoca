@@ -26,12 +26,14 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Mapa({ personas, onSelectPersona }: MapaProps) {
+
   return (
     <MapContainer
       center={[6.6996, -73.0181]}
       zoom={13}
-      style={{ height: "100%", width: "100%" }}  // 👈 IMPORTANTE
+      className="leaflet-container"
     >
+
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -46,6 +48,7 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
           }}
         />
       ))}
+
     </MapContainer>
   );
 }

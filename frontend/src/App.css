@@ -1,29 +1,89 @@
-html, body, #root {
-  height: 100%;
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.app-container {
-  display: flex;
-  height: 100vh;
+html, body, #root {
+  height: 100%;
   width: 100%;
 }
 
-.mapa-container {
+/* estructura principal */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* barra superior */
+
+.nav {
+  display: flex;
+  justify-content: flex-start;
+  padding: 15px 25px;
+  background: #1e293b;
+}
+
+.login-btn {
+  padding: 8px 14px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* contenedor general */
+
+.app-container {
   flex: 1;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* mapa */
+
+.mapa-container {
+  flex: 3;
   height: 100%;
 }
 
+/* panel */
+
 .panel-container {
-  width: 320px;
-  height: 100%;
-  background-color: #2e8ca8;
+  flex: 1;
+  background: #aecbe9;
+  border-radius: 10px;
   padding: 20px;
-  color: white;
   overflow-y: auto;
 }
+
+/* mapa leaflet */
 
 .leaflet-container {
   height: 100%;
   width: 100%;
+  border-radius: 10px;
+}
+
+/* responsive */
+
+@media (max-width: 900px) {
+
+  .app-container {
+    flex-direction: column;
+  }
+
+  .mapa-container {
+    height: 60%;
+  }
+
+  .panel-container {
+    height: 40%;
+  }
+
 }
