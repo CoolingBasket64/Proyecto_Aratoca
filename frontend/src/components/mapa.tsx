@@ -27,15 +27,14 @@ L.Icon.Default.mergeOptions({
 
 export default function Mapa({ personas, onSelectPersona }: MapaProps) {
 
-  console.log("Personas que llegan al mapa:", personas);
+  console.log("Personas que llegan al mapa:", personas); 
 
   return (
-    <MapContainer
-      center={[6.6996, -73.0181]}
-      zoom={13}
-      style={{ height: "100%", width: "100%" }}
-    >
-
+      <MapContainer
+  center={[6.6996, -73.0181]}
+  zoom={13}
+ 
+>
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -43,14 +42,15 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
 
       {personas.map((persona) => (
         <Marker
-          key={persona.id}
-          position={[Number(persona.latitud), Number(persona.longitud)]}
-          eventHandlers={{
-            click: () => onSelectPersona(persona),
-          }}
-        />
+        key={persona.id}
+        position={[Number(persona.latitud), Number(persona.longitud)]}
+        eventHandlers={{
+          click: () => onSelectPersona(persona),
+        }}
+      >
+          
+        </Marker>
       ))}
-
     </MapContainer>
   );
 }
