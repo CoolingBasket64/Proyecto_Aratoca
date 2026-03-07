@@ -1,0 +1,126 @@
+.dashboard-layout{
+  display:flex;
+  min-height:100vh;
+  background:#f4f6f9;
+}
+
+.dashboard-layout{
+  display:flex;
+  min-height:100vh;
+}
+
+.sidebar{
+  width:250px;
+  background:#1f2a40;
+  color:white;
+  padding:20px;
+}
+
+.sidebar h2{
+  margin-bottom:30px;
+}
+
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:white;
+  text-decoration:none;
+  margin-bottom:15px;
+}
+
+.sidebar a:hover{
+  color:#2d6cdf;
+}
+
+/* contenido */
+
+.dashboard-content{
+  flex:1;
+  padding:40px;
+}
+
+/* formulario */
+
+.dashboard-container{
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  max-width:900px;
+}
+
+/* grid formularios */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.form-grid input,
+.form-grid select{
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  width:100%;
+  background:white;
+  color:black;
+}
+
+.full-width{
+  grid-column:span 2;
+}
+
+.form-title{
+  grid-column:span 2;
+}
+
+/* botones */
+
+.btn-guardar{
+  grid-column:span 2;
+  padding:12px;
+  background:#2d6cdf;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.btn-volver-dashboard{
+  margin-bottom:20px;
+  padding:10px;
+  background:#6c757d;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* botones dashboard */
+
+.dashboard-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.dashboard-btn{
+  padding:20px;
+  font-size:16px;
+  background:#2d6cdf;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.logout{
+  margin-top:40px;
+  background:#dc3545;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}

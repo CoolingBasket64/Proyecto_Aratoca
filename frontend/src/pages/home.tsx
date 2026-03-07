@@ -23,7 +23,6 @@ export default function Home() {
         cargarPersonas();
     }, []);
 
-    // Filtrar personas según la discapacidad elegida
     const personasFiltradas =
         filtroDiscapacidad === ""
             ? personas
