@@ -63,6 +63,20 @@ CREATE TABLE cuidadores (
     FOREIGN KEY (cod_tipo_doc) REFERENCES ttipo_doc(cod_tipo_doc)
 );
 
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    rol VARCHAR(20) DEFAULT 'admin',
+    estado BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO usuarios (nombre,email,password,rol)
+VALUES ('Administrador','admin@aratoca.com','123456','admin');
+
+select * from usuarios;
 
 INSERT INTO ttipo_doc (descripcion_min, descripcion) VALUES
 ('CC','Cédula de Ciudadanía'),
@@ -101,10 +115,7 @@ where id_persona = 2;
 INSERT INTO ubicaciones (zona, sector, direccion, latitud, longitud)
 VALUES ('Centro', 'Sector B', 'Calle 11 #5-25', 6.7002, -73.0176);
 
-
 SELECT * FROM personas_discapacidad;
-
-
 
 SELECT p.id_persona, p.nombre_completo, p.edad, p.sexo, p.discapacidad,u.sector, u.latitud, u.longitud
 FROM personas_discapacidad p
