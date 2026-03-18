@@ -9,6 +9,7 @@ export default function Home() {
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [personaSeleccionada, setPersonaSeleccionada] = useState<Persona | null>(null);
     const [filtroDiscapacidad, setFiltroDiscapacidad] = useState<string>("");
+    const lista = Array.isArray(personas) ? personas : [];
 
     useEffect(() => {
         const cargarPersonas = async () => {
@@ -25,14 +26,14 @@ export default function Home() {
 
     const personasFiltradas =
         filtroDiscapacidad === ""
-            ? personas
-            : personas.filter(
+            ? lista
+            : lista.filter(
                 (p) =>
                     p.discapacidad?.toLowerCase() ===
                     filtroDiscapacidad.toLowerCase()
             );
 
-
+    console.log("Personas filtradas con coordenadas:", personasFiltradas);
     return (
         <div className="app">
 

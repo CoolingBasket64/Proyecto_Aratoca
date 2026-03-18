@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import type { Persona } from "../types/person";
 
 interface MapaProps {
-  personas: Persona[];
+  personas: Persona[] | null;
   onSelectPersona: (persona: Persona) => void;
 }
 
@@ -26,38 +26,45 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Mapa({ personas, onSelectPersona }: MapaProps) {
+  const personasConCoordenadas =
+    personas?.filter(
+      (p) =>
+        p.latitud !== null &&
+        p.longitud !== null &&
+        !isNaN(Number(p.latitud)) &&
+        !isNaN(Number(p.longitud))
+    ) || [];
+
+  const centro: [number, number] =
+    personasConCoordenadas.length > 0
+      ? [
+        Number(personasConCoordenadas[0].latitud),
+        Number(personasConCoordenadas[0].longitud)
+      ]
+      : [6.6996, -73.0181];
 
   return (
-    <MapContainer
-      center={[6.6996, -73.0181]}
-      zoom={13}
-      className="leaflet-container"
-    >
-
+    <MapContainer center={centro} zoom={13} className="leaflet-container">
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {personas
-        .filter(
-          (persona) =>
-            persona.latitud !== null &&
-            persona.longitud !== null &&
-            !isNaN(Number(persona.latitud)) &&
-            !isNaN(Number(persona.longitud))
-        )
-        .map((persona) => (
-          <Marker
-            key={persona.id_persona}
-            position={[Number(persona.latitud), Number(persona.longitud)]}
-            eventHandlers={{
-              click: () => onSelectPersona(persona),
-            }}
-          />
-        ))}
+      {personasConCoordenadas.map((persona) => (
+        <Marker
+          key={persona.id_persona}
+          position={[Number(persona.latitud), Number(persona.longitud)]}
+          eventHandlers={{
+            click: () => onSelectPersona(persona),
+          }}
+        />
+      ))}
 
-
+      {personasConCoordenadas.length === 0 && (
+        <div className="no-data-message">
+          No hay personas con coordenadas para mostrar en el mapa.
+        </div>
+      )}
     </MapContainer>
   );
 }

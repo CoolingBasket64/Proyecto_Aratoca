@@ -8,6 +8,7 @@ export default function CrearDiscapacitado() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    cod_tipo_doc: "",
     documento: "",
     primer_nombre: "",
     segundo_nombre: "",
@@ -30,9 +31,29 @@ export default function CrearDiscapacitado() {
     });
   };
 
-  const handleSubmit = (e: any) => {
+  const [mensaje, setMensaje] = useState("");
+  const [mensajeTipo, setMensajeTipo] = useState<"success" | "error">("success");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(form);
+
+    try {
+      const response = await fetch("http://localhost:7800/api/personas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          cod_tipo_doc: Number(form.cod_tipo_doc) // asegurar número
+        }),
+      });
+
+      if (!response.ok) throw new Error("Error al crear la persona");
+      const data = await response.json();
+      setMensaje("Persona creada correctamente!");
+      setTimeout(() => navigate("/dashboard"), 2000);
+    } catch (error) {
+      console.error(error);
+      setMensaje("Ocurrió un error al crear la persona");
+    }
   };
 
   return (
@@ -58,6 +79,24 @@ export default function CrearDiscapacitado() {
           <h2>Crear Persona con Discapacidad</h2>
 
           <form className="form-grid" onSubmit={handleSubmit}>
+            <div style={{ display: "flex", flexDirection: "column", marginBottom: "1rem" }}>
+              <label htmlFor="cod_tipo_doc">Tipo de Documento</label>
+              <select
+                id="cod_tipo_doc"
+                name="cod_tipo_doc"
+                onChange={handleChange}
+                value={form.cod_tipo_doc || ""}
+              >
+                <option value="">Seleccione tipo de documento</option>
+                <option value="1">Cédula de Ciudadanía</option>
+                <option value="2">Cédula de Extranjería</option>
+                <option value="3">Tarjeta de Identidad</option>
+                <option value="4">Registro Civil</option>
+                <option value="5">Pasaporte</option>
+                <option value="6">Permiso por Protección Temporal</option>
+              </select>
+            </div>
+
 
             <input name="documento" placeholder="Documento" onChange={handleChange} />
 
@@ -68,11 +107,21 @@ export default function CrearDiscapacitado() {
             <input name="primer_apellido" placeholder="Primer Apellido" onChange={handleChange} />
 
             <input name="segundo_apellido" placeholder="Segundo Apellido" onChange={handleChange} />
+            <h3 className="form-title">Datos Personales</h3>
 
-            <input type="date" name="fecha_nacimiento" onChange={handleChange} />
+            <div style={{ display: "flex", flexDirection: "column", marginBottom: "1rem" }}>
+              <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                id="fecha_nacimiento"
+                name="fecha_nacimiento"
+                onChange={handleChange}
+              />
+            </div>
 
             <select name="sexo" onChange={handleChange}>
               <option value="">Sexo</option>
+              <option value="I">Indefinido</option>
               <option value="M">Masculino</option>
               <option value="F">Femenino</option>
             </select>
@@ -91,6 +140,7 @@ export default function CrearDiscapacitado() {
 
             <input name="direccion" placeholder="Dirección" className="full-width" onChange={handleChange} />
 
+            {mensaje && <p className={`mensaje ${mensajeTipo}`}>{mensaje}</p>}
             <button className="btn-guardar" type="submit">
               Guardar
             </button>

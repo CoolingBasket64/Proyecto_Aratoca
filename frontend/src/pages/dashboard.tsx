@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import "../styles/dashboard.css";
 
@@ -17,14 +18,21 @@ export default function Dashboard() {
 
           <div className="dashboard-buttons">
 
-            <button className="dashboard-btn">Crear Discapacitado</button>
+            <Link to="/crear-discapacitado" className="dashboard-btn">
+              Crear Discapacitado
+            </Link>
+            
+            <Link to="/editar-discapacitado" className="dashboard-btn">
+              Editar Discapacitado
+            </Link>
 
-            <button className="dashboard-btn">Editar Discapacitado</button>
+            <Link to="/inactivar-discapacitado" className="dashboard-btn">
+              Inactivar Discapacitado
+            </Link>
 
-            <button className="dashboard-btn">Inactivar Discapacitado</button>
-
-            <button className="dashboard-btn">Crear Administrador</button>
-
+            <Link to="/crear-admino" className="dashboard-btn">
+              Crear Admin
+            </Link>
           </div>
 
         </div>
