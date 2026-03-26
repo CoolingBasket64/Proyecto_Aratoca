@@ -26,13 +26,13 @@ export default function Home() {
 
     const personasFiltradas =
         filtroDiscapacidad === ""
-            ? lista
+            ? lista.filter(p => p.activo === 1)
             : lista.filter(
                 (p) =>
+                    p.activo === 1 &&
                     p.discapacidad?.toLowerCase() ===
                     filtroDiscapacidad.toLowerCase()
             );
-
     console.log("Personas filtradas con coordenadas:", personasFiltradas);
     return (
         <div className="app">
@@ -77,10 +77,12 @@ export default function Home() {
                             onChange={(e) => setFiltroDiscapacidad(e.target.value)}
                         >
                             <option value="">Todas</option>
-                            <option value="visual">Visual</option>
-                            <option value="auditiva">Auditiva</option>
-                            <option value="motora">Motora</option>
-                            <option value="cognitiva">Cognitiva</option>
+                            <option value="Física">Física</option>
+                            <option value="Visual">Visual</option>
+                            <option value="Sordoceguera">Sordoceguera</option>
+                            <option value="Intelectual">Intelectual</option>
+                            <option value="Psicosocial-Mental">Psicosocial-Mental</option>
+                            <option value="Múltiple">Múltiple</option>
                         </select>
                     </div>
 

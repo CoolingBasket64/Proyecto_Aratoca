@@ -1,35 +1,46 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaUserPlus, FaEdit, FaUserSlash, FaUserShield, FaChartBar } from "react-icons/fa";
-
+import "../styles/dashboard.css";
 export default function Sidebar() {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const logout = () => {
-        navigate("/login");
-    };
+  const cerrarSesion = () => {
+    // Aquí puedes limpiar token si usas auth
+    // localStorage.removeItem("token");
 
-    return (
+    navigate("/"); // 👈 vuelve al mapa (home)
+  };
 
-        <div className="sidebar">
+  return (
+    <div className="sidebar">
 
-            <h2>Aratoca Admin</h2>
+      <h2 className="sidebar-title">Aratoca</h2>
 
-            <Link to="/dashboard"><FaChartBar /> Dashboard</Link>
+      <nav className="sidebar-menu">
 
-            <Link to="/crear-discapacitado"><FaUserPlus /> Crear Discapacitado</Link>
+        <Link to="/dashboard" className="sidebar-link">
+          🏠 Dashboard
+        </Link>
 
-            <Link to="/editar-discapacitado"><FaEdit /> Editar Discapacitado</Link>
+        <Link to="/crear-discapacitado" className="sidebar-link">
+          ➕ Crear Discapacitado
+        </Link>
 
-            <Link to="/inactivar-discapacitado"><FaUserSlash /> Inactivar Discapacitado</Link>
+        <Link to="/gestionar-discapacitado" className="sidebar-link">
+          ⚙️ Gestionar Discapacitado
+        </Link>
 
-            <Link to="/crear-admin"><FaUserShield /> Crear Admin</Link>
+        <Link to="/crear-admin" className="sidebar-link">
+          👤 Crear Admin
+        </Link>
 
-            <button className="logout" onClick={logout}>
-                Cerrar Sesión
-            </button>
+      </nav>
 
-        </div>
+      <button className="logout-btn" onClick={cerrarSesion}>
+        <span className="icon">🚪</span>
+        Cerrar sesión
+      </button>
 
-    );
+    </div>
+  );
 }

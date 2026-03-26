@@ -1,6 +1,7 @@
 const { obtenerPersonasDB } = require("../models/personaModel");
 const { insertarPersonaDB } = require("../models/personaModel");
 const { editarPersonaDB } = require("../models/personaModel");
+const { cambiarEstadoPersonaDB } = require("../models/personaModel");
 
 const obtenerPersonas = async (req, res) => {
   try {
@@ -33,17 +34,34 @@ const editarPersona = async (req, res) => {
     res.status(500).json({ mensaje: "Error al editar persona" });
   }
 };
-
-const { inactivarPersonaDB } = require("../models/personaModel");
-
-const inactivarPersona = async (req, res) => {
+const cambiarEstadoPersona = async (req, res) => {
   try {
     const id = req.params.id;
-    const resultado = await inactivarPersonaDB(id);
-    res.json({ mensaje: "Persona inactivada", affectedRows: resultado.affectedRows });
+    const { estado, razon } = req.body;
+
+    const resultado = await cambiarEstadoPersonaDB(id, estado, razon);
+
+    res.json({
+      mensaje: "Estado actualizado correctamente",
+      affectedRows: resultado.affectedRows
+    });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: "Error al inactivar persona" });
+    res.status(500).json({ mensaje: "Error al cambiar estado" });
   }
 };
-module.exports = { obtenerPersonas, crearPersona, editarPersona, inactivarPersona };
+
+const { obtenerPersonaPorIdDB } = require("../models/personaModel");
+
+const obtenerPersonaPorId = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const persona = await obtenerPersonaPorIdDB(id);
+
+    res.json(persona);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al obtener persona" });
+  }
+};
+module.exports = { obtenerPersonas, crearPersona, editarPersona, cambiarEstadoPersona, obtenerPersonaPorId };

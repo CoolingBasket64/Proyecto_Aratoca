@@ -28,10 +28,23 @@ export const editarPersona = async (id: number, persona: Partial<Persona>) => {
   return await response.json();
 };
 
-export const inactivarPersona = async (id: number) => {
+export const cambiarEstado = async (
+  id: number,
+  estado: number,
+  razon: string
+) => {
   const response = await fetch(`${API_URL}/${id}/inactivar`, {
     method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ estado, razon })
   });
-  if (!response.ok) throw new Error("Error inactivando persona");
+
+  if (!response.ok) throw new Error("Error cambiando estado");
+
+  return await response.json();
+};
+export const obtenerPersonaPorId = async (id: number): Promise<Persona> => {
+  const response = await fetch(`${API_URL}/${id}`);
+  if (!response.ok) throw new Error("Error obteniendo persona");
   return await response.json();
 };

@@ -2,13 +2,17 @@ import Sidebar from "../components/sidebar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { crearPersona } from "../services/personService";
+import { useParams } from "react-router-dom";
+import { obtenerPersonaPorId, editarPersona } from "../services/personService";
+import { useEffect } from "react";
 import "../styles/dashboard.css";
 
 
 export default function CrearDiscapacitado() {
 
   const navigate = useNavigate();
-
+  const { id } = useParams();
+  const esEdicion = !!id;
   const [form, setForm] = useState({
     cod_tipo_doc: "",
     documento: "",
@@ -38,6 +42,39 @@ export default function CrearDiscapacitado() {
     cuidador_celular: ""
   });
 
+  useEffect(() => {
+    if (esEdicion) {
+      cargarPersona();
+    }
+  }, [id]);
+
+  const cargarPersona = async () => {
+    try {
+      const data = await obtenerPersonaPorId(Number(id));
+
+      setForm((prev) => ({
+        ...prev,
+        ...data,
+
+        tiene_cuidador: data.tiene_cuidador == 1,
+
+        cuidador_cod_tipo_doc: data.cuidador?.cod_tipo_doc || "",
+        cuidador_documento: data.cuidador?.documento || "",
+        cuidador_primer_nombre: data.cuidador?.primer_nombre || "",
+        cuidador_segundo_nombre: data.cuidador?.segundo_nombre || "",
+        cuidador_primer_apellido: data.cuidador?.primer_apellido || "",
+        cuidador_segundo_apellido: data.cuidador?.segundo_apellido || "",
+        cuidador_fecha_nacimiento: data.cuidador?.fecha_nacimiento || "",
+        cuidador_sexo: data.cuidador?.sexo || "",
+        cuidador_parentesco: data.cuidador?.parentesco || "",
+        cuidador_celular: data.cuidador?.celular || ""
+      }));
+
+    } catch (error) {
+      console.error("Error cargando persona", error);
+    }
+  };
+
   const handleChange = (e: any) => {
     const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setForm({
@@ -53,13 +90,39 @@ export default function CrearDiscapacitado() {
     e.preventDefault();
 
     try {
-      const data = await crearPersona(form);
-      console.log("Persona creada:", data);
-      setMensaje("Persona creada correctamente!");
+      const dataToSend = {
+        ...form,
+        tiene_cuidador: form.tiene_cuidador ? 1 : 0,
+
+        cuidador: form.tiene_cuidador
+          ? {
+            cod_tipo_doc: form.cuidador_cod_tipo_doc,
+            documento: form.cuidador_documento,
+            primer_nombre: form.cuidador_primer_nombre,
+            segundo_nombre: form.cuidador_segundo_nombre,
+            primer_apellido: form.cuidador_primer_apellido,
+            segundo_apellido: form.cuidador_segundo_apellido,
+            fecha_nacimiento: form.cuidador_fecha_nacimiento,
+            sexo: form.cuidador_sexo,
+            parentesco: form.cuidador_parentesco,
+            celular: form.cuidador_celular
+          }
+          : null
+      };
+
+      if (esEdicion) {
+        await editarPersona(Number(id), dataToSend);
+        setMensaje("Persona actualizada correctamente ✅");
+      } else {
+        await crearPersona(dataToSend);
+        setMensaje("Persona creada correctamente ✅");
+      }
+      console.log("DATA FINAL:", dataToSend);
       setTimeout(() => navigate("/dashboard"), 2000);
+
     } catch (error) {
       console.error(error);
-      setMensaje("Ocurrió un error al crear la persona");
+      setMensaje("Ocurrió un error ❌");
     }
   };
 
@@ -76,7 +139,11 @@ export default function CrearDiscapacitado() {
             Volver
           </button>
 
-          <h2>Crear Persona con Discapacidad</h2>
+          <h2>
+            {esEdicion
+              ? "Editar Persona con Discapacidad"
+              : "Crear Persona con Discapacidad"}
+          </h2>
           <form className="form-grid" onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="cod_tipo_doc">Tipo de Documento</label>
@@ -102,8 +169,19 @@ export default function CrearDiscapacitado() {
             <input name="segundo_nombre" placeholder="Segundo Nombre" onChange={handleChange} />
             <input name="primer_apellido" placeholder="Primer Apellido" onChange={handleChange} />
             <input name="segundo_apellido" placeholder="Segundo Apellido" onChange={handleChange} />
-            <input name="rlcpd" placeholder="RLCPD" onChange={handleChange} />
-
+            <div className="form-group">
+              <label htmlFor="rlcpd">RLCPD</label>
+              <select
+                id="rlcpd"
+                name="rlcpd"
+                value={form.rlcpd || ""}
+                onChange={handleChange}
+              >
+                <option value="">Seleccione una opción</option>
+                <option value="SI">Sí</option>
+                <option value="NO">No</option>
+              </select>
+            </div>
             <h3 className="form-title">Datos Personales</h3>
             <div className="form-group">
               <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
@@ -142,14 +220,31 @@ export default function CrearDiscapacitado() {
 
 
             <h3 className="form-title">Ubicación</h3>
-            <input name="zona" placeholder="Zona" onChange={handleChange} />
+            <div className="form-group">
+              <label htmlFor="zona">Zona</label>
+              <select
+                id="zona"
+                name="zona"
+                value={form.zona || ""}
+                onChange={handleChange}
+              >
+                <option value="">Seleccione zona</option>
+                <option value="Urbana">Urbana</option>
+                <option value="Rural">Rural</option>
+              </select>
+            </div>
             <input name="vereda" placeholder="Vereda" onChange={handleChange} />
             <input name="sector" placeholder="Sector" onChange={handleChange} />
             <input name="direccion" placeholder="Dirección" className="full-width" onChange={handleChange} />
 
             <div className="full-width">
               <label>
-                <input type="checkbox" name="tiene_cuidador" onChange={handleChange} />
+                <input
+                  type="checkbox"
+                  name="tiene_cuidador"
+                  checked={form.tiene_cuidador}
+                  onChange={handleChange}
+                />
                 Tiene cuidador
               </label>
             </div>
@@ -173,11 +268,11 @@ export default function CrearDiscapacitado() {
                 <input name="cuidador_segundo_apellido" placeholder="Segundo Apellido" onChange={handleChange} />
                 <div className="form-group">
                   <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
-                  <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" onChange={handleChange} />
+                  <input type="date" name="cuidador_fecha_nacimiento" value={form.cuidador_fecha_nacimiento} onChange={handleChange} />
                 </div>
                 <div className="form-group">
                   <label>Sexo</label>
-                  <select name="sexo" onChange={handleChange}>
+                  <select name="cuidador_sexo" onChange={handleChange}>
                     <option value="">Seleccione</option>
                     <option value="I">Indefinido</option>
                     <option value="M">Masculino</option>
@@ -190,7 +285,9 @@ export default function CrearDiscapacitado() {
             )}
 
             {mensaje && <p className={`mensaje ${mensajeTipo}`}>{mensaje}</p>}
-            <button className="btn-guardar" type="submit">Guardar</button>
+            <button className="btn-guardar" type="submit">
+              {esEdicion ? "Actualizar" : "Guardar"}
+            </button>
           </form>
         </div>
       </div>

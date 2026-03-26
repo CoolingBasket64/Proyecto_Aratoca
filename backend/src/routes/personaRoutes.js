@@ -5,12 +5,14 @@ const {
   obtenerPersonas,
   crearPersona,
   editarPersona,
-  inactivarPersona
+  cambiarEstadoPersona,
+  obtenerPersonaPorId
 } = require("../controllers/personaController");
 
 router.get("/", obtenerPersonas);
 router.post("/", crearPersona);
 router.put("/:id", editarPersona);
-router.patch("/:id/inactivar", inactivarPersona);
+router.patch("/:id/inactivar", cambiarEstadoPersona);
+router.get("/personas/:id", obtenerPersonaPorId);
 
 module.exports = router;

@@ -21,18 +21,15 @@ export default function Dashboard() {
             <Link to="/crear-discapacitado" className="dashboard-btn">
               Crear Discapacitado
             </Link>
-            
+
             <Link to="/editar-discapacitado" className="dashboard-btn">
-              Editar Discapacitado
+              Gestionar Discapacitado
             </Link>
 
-            <Link to="/inactivar-discapacitado" className="dashboard-btn">
-              Inactivar Discapacitado
-            </Link>
-
-            <Link to="/crear-admino" className="dashboard-btn">
+            <Link to="/crear-admin" className="dashboard-btn">
               Crear Admin
             </Link>
+
           </div>
 
         </div>

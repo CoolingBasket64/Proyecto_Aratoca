@@ -42,6 +42,12 @@ CREATE TABLE personas_discapacidad (
     FOREIGN KEY (cod_tipo_doc) REFERENCES ttipo_doc(cod_tipo_doc),
     FOREIGN KEY (id_ubicacion) REFERENCES ubicaciones(id_ubicacion)
 );
+ALTER TABLE personas_discapacidad
+ADD activo BOOLEAN DEFAULT 1,
+ADD fecha_modificacion TIMESTAMP 
+DEFAULT CURRENT_TIMESTAMP 
+ON UPDATE CURRENT_TIMESTAMP,
+ADD razon_estado VARCHAR(255);
 
 
 CREATE TABLE cuidadores (
