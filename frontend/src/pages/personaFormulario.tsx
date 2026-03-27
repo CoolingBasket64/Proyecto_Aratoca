@@ -6,10 +6,12 @@ import { useParams } from "react-router-dom";
 import { obtenerPersonaPorId, editarPersona } from "../services/personService";
 import { useEffect } from "react";
 import "../styles/dashboard.css";
+import { useLocation } from "react-router-dom";
 
 
 export default function CrearDiscapacitado() {
-
+  const location = useLocation();
+  const from = location.state?.from;
   const navigate = useNavigate();
   const { id } = useParams();
   const esEdicion = !!id;
@@ -48,6 +50,11 @@ export default function CrearDiscapacitado() {
     }
   }, [id]);
 
+  const formatDate = (date?: string) => {
+    if (!date) return "";
+    return date.split("T")[0];
+  };
+
   const cargarPersona = async () => {
     try {
       const data = await obtenerPersonaPorId(Number(id));
@@ -55,6 +62,8 @@ export default function CrearDiscapacitado() {
       setForm((prev) => ({
         ...prev,
         ...data,
+
+        fecha_nacimiento: formatDate(data.fecha_nacimiento),
 
         tiene_cuidador: data.tiene_cuidador == 1,
 
@@ -64,7 +73,7 @@ export default function CrearDiscapacitado() {
         cuidador_segundo_nombre: data.cuidador?.segundo_nombre || "",
         cuidador_primer_apellido: data.cuidador?.primer_apellido || "",
         cuidador_segundo_apellido: data.cuidador?.segundo_apellido || "",
-        cuidador_fecha_nacimiento: data.cuidador?.fecha_nacimiento || "",
+        cuidador_fecha_nacimiento: formatDate(data.cuidador?.fecha_nacimiento),
         cuidador_sexo: data.cuidador?.sexo || "",
         cuidador_parentesco: data.cuidador?.parentesco || "",
         cuidador_celular: data.cuidador?.celular || ""
@@ -76,10 +85,22 @@ export default function CrearDiscapacitado() {
   };
 
   const handleChange = (e: any) => {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    setForm({
-      ...form,
-      [e.target.name]: value
+    const { name, type, checked, value } = e.target;
+    const val = type === "checkbox" ? checked : value;
+
+    setForm((prev) => {
+      if (name === "zona") {
+        return {
+          ...prev,
+          zona: val,
+          ...(val !== "Rural" && { vereda: "", sector: "" })
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: val
+      };
     });
   };
 
@@ -134,7 +155,13 @@ export default function CrearDiscapacitado() {
           <button
             type="button"
             className="btn-volver-dashboard"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => {
+              if (from === "gestionar") {
+                navigate("/gestionar-discapacitado");
+              } else {
+                navigate("/dashboard");
+              }
+            }}
           >
             Volver
           </button>
@@ -147,12 +174,7 @@ export default function CrearDiscapacitado() {
           <form className="form-grid" onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="cod_tipo_doc">Tipo de Documento</label>
-              <select
-                id="cod_tipo_doc"
-                name="cod_tipo_doc"
-                onChange={handleChange}
-                value={form.cod_tipo_doc || ""}
-              >
+              <select id="cod_tipo_doc" name="cod_tipo_doc" onChange={handleChange} value={form.cod_tipo_doc} >
                 <option value="">Seleccione tipo de documento</option>
                 <option value="1">Cédula de Ciudadanía</option>
                 <option value="2">Cédula de Extranjería</option>
@@ -163,20 +185,28 @@ export default function CrearDiscapacitado() {
               </select>
             </div>
             <div>
-              <input className="form-control" name="documento" placeholder="Documento" onChange={handleChange} />
+              <label htmlFor="Nro Documento">Nro Documento</label>
+              <input className="form-control" name="documento" placeholder="Documento" value={form.documento} onChange={handleChange} />
             </div>
-            <input name="primer_nombre" placeholder="Primer Nombre" onChange={handleChange} />
-            <input name="segundo_nombre" placeholder="Segundo Nombre" onChange={handleChange} />
-            <input name="primer_apellido" placeholder="Primer Apellido" onChange={handleChange} />
-            <input name="segundo_apellido" placeholder="Segundo Apellido" onChange={handleChange} />
+            <div>
+              <label htmlFor="Primer Nombre">Primer Nombre</label>
+              <input name="primer_nombre" placeholder="Primer Nombre" value={form.primer_nombre} onChange={handleChange} />
+            </div>
+            <div>
+              <label htmlFor="Segundo Nombre">Segundo Nombre</label>
+              <input name="segundo_nombre" placeholder="Segundo Nombre" value={form.segundo_nombre} onChange={handleChange} />
+            </div>
+            <div>
+              <label htmlFor="Primer Apellido">Primer Apellido</label>
+              <input name="primer_apellido" placeholder="Primer Apellido" value={form.primer_apellido} onChange={handleChange} />
+            </div>
+            <div>
+              <label htmlFor="Segundo Apellido">Segundo Apellido</label>
+              <input name="segundo_apellido" placeholder="Segundo Apellido" value={form.segundo_apellido} onChange={handleChange} />
+            </div>
             <div className="form-group">
               <label htmlFor="rlcpd">RLCPD</label>
-              <select
-                id="rlcpd"
-                name="rlcpd"
-                value={form.rlcpd || ""}
-                onChange={handleChange}
-              >
+              <select id="rlcpd" name="rlcpd" value={form.rlcpd || ""} onChange={handleChange} >
                 <option value="">Seleccione una opción</option>
                 <option value="SI">Sí</option>
                 <option value="NO">No</option>
@@ -185,10 +215,11 @@ export default function CrearDiscapacitado() {
             <h3 className="form-title">Datos Personales</h3>
             <div className="form-group">
               <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
-              <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" onChange={handleChange} />
+              <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value={form.fecha_nacimiento} onChange={handleChange} />
             </div>
             <div>
-              <select className="form-control" name="sexo" onChange={handleChange}>
+              <label htmlFor="Sexo">Sexo</label>
+              <select className="form-control" name="sexo" value={form.sexo} onChange={handleChange}>
                 <option value="">Sexo</option>
                 <option value="I">Indefinido</option>
                 <option value="M">Masculino</option>
@@ -199,12 +230,7 @@ export default function CrearDiscapacitado() {
 
             <div className="form-group">
               <label htmlFor="discapacidad">Tipo de Discapacidad</label>
-              <select
-                id="discapacidad"
-                name="discapacidad"
-                onChange={handleChange}
-                value={form.discapacidad || ""}
-              >
+              <select id="discapacidad" name="discapacidad" onChange={handleChange} value={form.discapacidad} >
                 <option value="">Seleccione discapacidad</option>
                 <option value="Física">Física</option>
                 <option value="Visual">Visual</option>
@@ -215,36 +241,39 @@ export default function CrearDiscapacitado() {
               </select>
             </div>
             <div>
-              <input className="form-control" name="celular" placeholder="Celular" onChange={handleChange} />
+              <label htmlFor="Celular">Celular</label>
+              <input className="form-control" name="celular" placeholder="Celular" value={form.celular} onChange={handleChange} />
             </div>
-
-
             <h3 className="form-title">Ubicación</h3>
             <div className="form-group">
               <label htmlFor="zona">Zona</label>
-              <select
-                id="zona"
-                name="zona"
-                value={form.zona || ""}
-                onChange={handleChange}
-              >
+              <select id="zona" name="zona" value={form.zona || ""} onChange={handleChange} >
                 <option value="">Seleccione zona</option>
                 <option value="Urbana">Urbana</option>
                 <option value="Rural">Rural</option>
               </select>
             </div>
-            <input name="vereda" placeholder="Vereda" onChange={handleChange} />
-            <input name="sector" placeholder="Sector" onChange={handleChange} />
-            <input name="direccion" placeholder="Dirección" className="full-width" onChange={handleChange} />
+            {form.zona === "Rural" && (
+              <>
+                <div>
+                  <label htmlFor="Vereda">Vereda</label>
+                  <input name="vereda" placeholder="Vereda" value={form.vereda} onChange={handleChange} />
+                </div>
+                <div>
+                  <label htmlFor="Sector">Sector</label>
+                  <input name="sector" placeholder="Sector" value={form.sector} onChange={handleChange} />
+                </div>
+
+              </>
+            )}
+            <div>
+              <label htmlFor="Dirección">Dirección</label>
+              <input name="direccion" placeholder="Dirección" className="full-width" value={form.direccion} onChange={handleChange} />
+            </div>
 
             <div className="full-width">
               <label>
-                <input
-                  type="checkbox"
-                  name="tiene_cuidador"
-                  checked={form.tiene_cuidador}
-                  onChange={handleChange}
-                />
+                <input type="checkbox" name="tiene_cuidador" checked={form.tiene_cuidador} onChange={handleChange} />
                 Tiene cuidador
               </label>
             </div>
@@ -252,35 +281,62 @@ export default function CrearDiscapacitado() {
             {form.tiene_cuidador && (
               <div className="cuidador-section">
                 <h3>Datos del Cuidador</h3>
-                <select name="cuidador_cod_tipo_doc" onChange={handleChange}>
-                  <option value="">Seleccione tipo de documento</option>
-                  <option value="1">Cédula de Ciudadanía</option>
-                  <option value="2">Cédula de Extranjería</option>
-                  <option value="3">Tarjeta de Identidad</option>
-                  <option value="4">Registro Civil</option>
-                  <option value="5">Pasaporte</option>
-                  <option value="6">Permiso por Protección Temporal</option>
-                </select>
-                <input name="cuidador_documento" placeholder="Documento" onChange={handleChange} />
-                <input name="cuidador_primer_nombre" placeholder="Primer Nombre" onChange={handleChange} />
-                <input name="cuidador_segundo_nombre" placeholder="Segundo Nombre" onChange={handleChange} />
-                <input name="cuidador_primer_apellido" placeholder="Primer Apellido" onChange={handleChange} />
-                <input name="cuidador_segundo_apellido" placeholder="Segundo Apellido" onChange={handleChange} />
+                <div>
+                  <label>Tipo Documento</label>
+                  <select name="cuidador_cod_tipo_doc" value={form.cuidador_cod_tipo_doc || ""} onChange={handleChange}>
+                    <option value="">Seleccione tipo de documento</option>
+                    <option value="1">Cédula de Ciudadanía</option>
+                    <option value="2">Cédula de Extranjería</option>
+                    <option value="3">Tarjeta de Identidad</option>
+                    <option value="4">Registro Civil</option>
+                    <option value="5">Pasaporte</option>
+                    <option value="6">Permiso por Protección Temporal</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Nro Documento</label>
+                  <input name="cuidador_documento" placeholder="Documento" value={form.cuidador_documento} onChange={handleChange} />
+                </div>
+                <div>
+                  <label>Primer Nombre</label>
+                  <input name="cuidador_primer_nombre" placeholder="Primer Nombre" value={form.cuidador_primer_nombre} onChange={handleChange} />
+                </div>
+                <div>
+                  <label>Segundo Nombre</label>
+                  <input name="cuidador_segundo_nombre" placeholder="Segundo Nombre" value={form.cuidador_segundo_nombre} onChange={handleChange} />
+                </div>
+                <div>
+                  <label>Primer Apellido</label>
+                  <input name="cuidador_primer_apellido" placeholder="Primer Apellido" value={form.cuidador_primer_apellido} onChange={handleChange} />
+                </div>
+                <div>
+                  <label>Segundo Apellido</label>
+                  <input name="cuidador_segundo_apellido" placeholder="Segundo Apellido" value={form.cuidador_segundo_apellido} onChange={handleChange} />
+                </div>
+
+
+
                 <div className="form-group">
                   <label htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
                   <input type="date" name="cuidador_fecha_nacimiento" value={form.cuidador_fecha_nacimiento} onChange={handleChange} />
                 </div>
                 <div className="form-group">
                   <label>Sexo</label>
-                  <select name="cuidador_sexo" onChange={handleChange}>
+                  <select name="cuidador_sexo" value={form.cuidador_sexo || ""} onChange={handleChange}>
                     <option value="">Seleccione</option>
                     <option value="I">Indefinido</option>
                     <option value="M">Masculino</option>
                     <option value="F">Femenino</option>
                   </select>
                 </div>
-                <input name="cuidador_parentesco" placeholder="Parentesco" onChange={handleChange} />
-                <input name="cuidador_celular" placeholder="Celular" onChange={handleChange} />
+                <div>
+                  <label>Parentesco</label>
+                  <input name="cuidador_parentesco" placeholder="Parentesco" value={form.cuidador_parentesco} onChange={handleChange} />
+                </div>
+                <div>
+                  <label>Celular</label>
+                  <input name="cuidador_celular" placeholder="Celular" value={form.cuidador_celular} onChange={handleChange} />
+                </div>
               </div>
             )}
 

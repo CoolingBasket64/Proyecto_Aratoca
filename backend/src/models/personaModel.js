@@ -85,6 +85,70 @@ const crearCuidador = (idPersona, cuidador) => {
   });
 };
 
+const actualizarCuidador = (idPersona, cuidador) => {
+  return new Promise((resolve, reject) => {
+
+    const sqlBuscar = `SELECT id_cuidador FROM cuidadores WHERE id_persona = ?`;
+
+    db.query(sqlBuscar, [idPersona], (err, result) => {
+      if (err) return reject(err);
+
+      const nombreCompleto = `${cuidador.primer_nombre} ${cuidador.segundo_nombre} ${cuidador.primer_apellido} ${cuidador.segundo_apellido}`;
+
+      const fechaNacimiento = new Date(cuidador.fecha_nacimiento);
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
+
+      if (result.length > 0) {
+
+        const sqlUpdate = `
+          UPDATE cuidadores SET
+            cod_tipo_doc=?,
+            documento=?,
+            primer_nombre=?,
+            segundo_nombre=?,
+            primer_apellido=?,
+            segundo_apellido=?,
+            nombre_completo=?,
+            fecha_nacimiento=?,
+            edad=?,
+            sexo=?,
+            parentesco=?,
+            celular=?
+          WHERE id_persona=?
+        `;
+
+        db.query(sqlUpdate, [
+          cuidador.cod_tipo_doc,
+          cuidador.documento,
+          cuidador.primer_nombre,
+          cuidador.segundo_nombre,
+          cuidador.primer_apellido,
+          cuidador.segundo_apellido,
+          nombreCompleto,
+          cuidador.fecha_nacimiento,
+          edad,
+          cuidador.sexo,
+          cuidador.parentesco,
+          cuidador.celular,
+          idPersona
+        ], (err2, result2) => {
+          if (err2) return reject(err2);
+          resolve(result2);
+        });
+
+      } else {
+        crearCuidador(idPersona, cuidador)
+          .then(resolve)
+          .catch(reject);
+      }
+
+    });
+  });
+};
+
 const insertarPersonaDB = (persona) => {
   return new Promise((resolve, reject) => {
     // Insertar ubicación
@@ -202,10 +266,9 @@ const editarPersonaDB = (id, persona) => {
         try {
           if (persona.tiene_cuidador && persona.cuidador) {
 
-            await crearCuidador(id, persona.cuidador);
+            await actualizarCuidador(id, persona.cuidador);
 
           } else {
-            // eliminar cuidador si ya no tiene
             await new Promise((res, rej) => {
               db.query(
                 "DELETE FROM cuidadores WHERE id_persona = ?",

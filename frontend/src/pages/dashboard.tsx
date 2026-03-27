@@ -22,7 +22,7 @@ export default function Dashboard() {
               Crear Discapacitado
             </Link>
 
-            <Link to="/editar-discapacitado" className="dashboard-btn">
+            <Link to="/gestionar-discapacitado" className="dashboard-btn">
               Gestionar Discapacitado
             </Link>
 

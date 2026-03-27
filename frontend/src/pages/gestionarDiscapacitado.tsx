@@ -132,7 +132,7 @@ export default function EditarDiscapacitado() {
                     <td className="acciones">
                       <button
                         className="btn editar"
-                        onClick={() => navigate(`/editar/${p.id_persona}`)}
+                        onClick={() => navigate(`/editar/${p.id_persona}`, { state: { from: "gestionar" } })}
                       >
                         Editar
                       </button>
