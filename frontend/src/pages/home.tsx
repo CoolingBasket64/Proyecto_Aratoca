@@ -62,7 +62,12 @@ export default function Home() {
                             <h3>{personaSeleccionada.nombre_completo}</h3>
                             <p>Edad: {personaSeleccionada.edad}</p>
                             <p>Género: {personaSeleccionada.sexo === "M" ? "Masculino" : "Femenino"}</p>
-                            <p>Discapacidad: {personaSeleccionada.discapacidad.toLocaleUpperCase()}</p>
+                            <p>
+                            Discapacidad:{" "}
+                            {personaSeleccionada.discapacidad
+                                ? personaSeleccionada.discapacidad.toUpperCase()
+                                : "No registrada"}
+                            </p>
                             <p>Sector: {personaSeleccionada.sector}</p>
                         </div>
                     ) : (
