@@ -9,15 +9,11 @@ html, body, #root {
   width: 100%;
 }
 
-/* estructura principal */
-
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
-
-/* barra superior */
 
 .nav {
   display: flex;
@@ -34,8 +30,6 @@ html, body, #root {
   border-radius: 6px;
   cursor: pointer;
 }
-
-/* contenedor general */
 
 .app-container {
   flex: 1;

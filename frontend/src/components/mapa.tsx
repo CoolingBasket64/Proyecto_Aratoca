@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import type { Persona } from "../types/person";
 
 interface MapaProps {
-  personas: Persona[];
+  personas: Persona[] | null;
   onSelectPersona: (persona: Persona) => void;
 }
 

@@ -20,7 +20,7 @@ export default function Login() {
 
       alert("Login exitoso");
 
-      navigate("/"); // redirige al mapa
+      navigate("/dashboard");
 
     } catch (error: any) {
 
