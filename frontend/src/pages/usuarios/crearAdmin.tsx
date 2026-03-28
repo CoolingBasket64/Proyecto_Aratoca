@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import Sidebar from "../components/sidebar";
-import "../styles/dashboard.css";
+import Sidebar from "../../components/sidebar";
+import "../../styles/dashboard.css";
 
-import { crearAdmin, editarAdmin, obtenerAdminPorId } from "../services/usuarioService";
+import { crearAdmin, editarAdmin, obtenerAdminPorId } from "../../services/usuarioService";
 
 export default function CrearAdmin() {
 

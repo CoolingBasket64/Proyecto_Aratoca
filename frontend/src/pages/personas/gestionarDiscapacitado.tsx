@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../components/sidebar";
+import Sidebar from "../../components/sidebar";
 import { useNavigate } from "react-router-dom";
-import { obtenerPersonas, cambiarEstado } from "../services/personService";
-import type { Persona } from "../types/person";
-import "../styles/dashboard.css";
+import { obtenerPersonas, cambiarEstado } from "../../services/personService";
+import type { Persona } from "../../types/person";
+import "../../styles/dashboard.css";
 
 export default function EditarDiscapacitado() {
 
@@ -24,12 +24,12 @@ export default function EditarDiscapacitado() {
   const cargarPersonas = async () => {
     try {
       const data = await obtenerPersonas();
+      console.log(data);
       setPersonas(data);
     } catch (error) {
       console.error(error);
     }
-  };
-
+  }
   const personasFiltradas = personas.filter((p) =>
     p.documento?.includes(busqueda)
   );
@@ -106,6 +106,7 @@ export default function EditarDiscapacitado() {
             <table className="tabla">
               <thead>
                 <tr>
+                  <th>Codigo</th>
                   <th>Documento</th>
                   <th>Nombre</th>
                   <th>Edad</th>
@@ -117,7 +118,9 @@ export default function EditarDiscapacitado() {
 
               <tbody>
                 {personasFiltradas.map((p) => (
+
                   <tr key={p.id_persona}>
+                    <td>{p.codigo}</td>
                     <td>{p.documento}</td>
                     <td>{p.nombre_completo}</td>
                     <td>{p.edad}</td>

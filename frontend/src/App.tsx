@@ -4,10 +4,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
-import PersonaFormulario from "./pages/personaFormulario";
-import GestionarDiscapacitado from "./pages/gestionarDiscapacitado";
-import CrearAdmin from "./pages/crearAdmin";
-import GestionarAdmin from "./pages/gestionarAdmin";
+import PersonaFormulario from "./pages/personas/personaFormulario";
+import GestionarDiscapacitado from "./pages/personas/gestionarDiscapacitado";
+import CrearAdmin from "./pages/usuarios/crearAdmin";
+import GestionarAdmin from "./pages/usuarios/gestionarAdmin";
 
 import "./App.css";
 

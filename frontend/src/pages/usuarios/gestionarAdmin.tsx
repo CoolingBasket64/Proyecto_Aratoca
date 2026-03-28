@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../components/sidebar";
+import Sidebar from "../../components/sidebar";
 import { useNavigate } from "react-router-dom";
-import { obtenerAdmins, cambiarEstadoAdmin } from "../services/usuarioService";
-import "../styles/dashboard.css";
+import { obtenerAdmins, cambiarEstadoAdmin } from "../../services/usuarioService";
+import "../../styles/dashboard.css";
 
 type Admin = {
   id_usuario: number;

@@ -1,11 +1,11 @@
-import Sidebar from "../components/sidebar";
+import Sidebar from "../../components/sidebar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { crearPersona } from "../services/personService";
+import { crearPersona } from "../../services/personService";
 import { useParams } from "react-router-dom";
-import { obtenerPersonaPorId, editarPersona } from "../services/personService";
+import { obtenerPersonaPorId, editarPersona } from "../../services/personService";
 import { useEffect } from "react";
-import "../styles/dashboard.css";
+import "../../styles/dashboard.css";
 import { useLocation } from "react-router-dom";
 
 

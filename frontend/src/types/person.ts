@@ -13,6 +13,7 @@ export interface Cuidador {
 
 export interface Persona {
   id_persona: number;
+  codigo: string;
   documento: string;
   primer_nombre: string;
   segundo_nombre: string;

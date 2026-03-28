@@ -7,15 +7,14 @@ const obtenerPersonasDB = () => {
         const sql = `
                     SELECT 
                       p.id_persona, 
+                      p.codigo,
                       p.documento,
                       p.nombre_completo, 
                       p.edad, 
                       p.sexo, 
                       p.discapacidad,
                       p.activo,
-                      u.sector, 
-                      u.latitud, 
-                      u.longitud
+                      u.sector
                     FROM personas_discapacidad p
                     JOIN ubicaciones u ON p.id_ubicacion = u.id_ubicacion;
                     `;
