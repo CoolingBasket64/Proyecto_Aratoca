@@ -5,10 +5,8 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
-    // Aquí puedes limpiar token si usas auth
-    // localStorage.removeItem("token");
-
-    navigate("/"); // 👈 vuelve al mapa (home)
+    localStorage.removeItem("usuario");
+    navigate("/");
   };
 
   return (
@@ -31,7 +29,11 @@ export default function Sidebar() {
         </Link>
 
         <Link to="/crear-admin" className="sidebar-link">
-          👤 Crear Admin
+          👤 Crear Usuario
+        </Link>
+
+        <Link to="/gestionar-admin" className="sidebar-link">
+          ⚙️ Gestionar Usuarios
         </Link>
 
       </nav>

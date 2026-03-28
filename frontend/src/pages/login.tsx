@@ -15,7 +15,8 @@ export default function Login() {
     try {
 
       const data = await login(email, password);
-
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      navigate("/dashboard", { replace: true });
       console.log("Login exitoso:", data);
 
       alert("Login exitoso");

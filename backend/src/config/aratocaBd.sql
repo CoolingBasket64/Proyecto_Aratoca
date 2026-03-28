@@ -76,7 +76,7 @@ CREATE TABLE usuarios (
     password VARCHAR(255) NOT NULL,
     rol VARCHAR(20) DEFAULT 'admin',
     estado BOOLEAN DEFAULT TRUE,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO usuarios (nombre,email,password,rol)

@@ -12,6 +12,7 @@ app.use(express.json());
 app.use("/api/personas", personaRoutes);
 app.use("/api/usuarios", authRoutes);
 
+
 app.get("/", (req, res) => {
   res.send("Server funcionando");
 });

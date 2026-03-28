@@ -27,7 +27,11 @@ export default function Dashboard() {
             </Link>
 
             <Link to="/crear-admin" className="dashboard-btn">
-              Crear Admin
+              Crear Usuario
+            </Link>
+
+            <Link to="/gestionar-admin" className="dashboard-btn">
+              Gestionar Usuarios
             </Link>
 
           </div>
