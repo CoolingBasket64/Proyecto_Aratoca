@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Mapa from "../components/mapa";
-import { obtenerPersonas } from "../services/personService";
+import { obtenerPersonasPublicas } from "../services/personService";
 import type { Persona } from "../types/person";
 
 export default function Home() {
 
   // Lista completa de personas cargadas desde el backend
-  const [personas, setPersonas] = useState<Persona[]>([]);
+  const [personas, setPersonas] = useState<Partial<Persona>[]>([]);
   // Tipo de discapacidad seleccionado en el filtro (vacio = todas)
   const [filtroDiscapacidad, setFiltroDiscapacidad] = useState<string>("");
   // Codigo del sector seleccionado en el mapa
@@ -24,7 +24,7 @@ export default function Home() {
   useEffect(() => {
     const cargarPersonas = async () => {
       try {
-        const data = await obtenerPersonas();
+        const data = await obtenerPersonasPublicas();
         setPersonas(data);
       } catch (error) {
         console.error("Error cargando personas:", error);

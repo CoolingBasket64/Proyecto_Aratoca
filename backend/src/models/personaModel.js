@@ -1,5 +1,30 @@
 const db = require("../config/database");
 
+const obtenerPersonasPublicasDB = () => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT
+        p.id_persona,
+        p.edad,
+        p.sexo,
+        p.discapacidad,
+        p.rlcpd,
+        p.tiene_cuidador,
+        p.activo,
+        u.zona,
+        u.vereda,
+        u.cod_sector,
+        u.sector
+      FROM personas_discapacidad p
+      JOIN ubicaciones u ON p.id_ubicacion = u.id_ubicacion
+    `;
+    db.query(sql, (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+};
+
 const obtenerPersonasDB = () => {
   return new Promise((resolve, reject) => {
 
@@ -416,4 +441,4 @@ const buscarCuidadorPorDocumentoDB = (documento) => {
   });
 };
 
-module.exports = { obtenerPersonasDB, insertarPersonaDB, editarPersonaDB, cambiarEstadoPersonaDB, obtenerPersonaPorIdDB, buscarCuidadorPorDocumentoDB };
+module.exports = { obtenerPersonasPublicasDB, obtenerPersonasDB, insertarPersonaDB, editarPersonaDB, cambiarEstadoPersonaDB, obtenerPersonaPorIdDB, buscarCuidadorPorDocumentoDB };

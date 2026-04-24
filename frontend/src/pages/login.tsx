@@ -21,6 +21,7 @@ export default function Login() {
 
       // Guarda los datos del usuario en localStorage para mantener la sesion activa
       // JSON.stringify convierte el objeto a texto porque localStorage solo guarda strings
+      localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
       // Redirige al dashboard. "replace: true" evita que el usuario pueda

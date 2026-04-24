@@ -1,6 +1,7 @@
 // bcrypt es una libreria para hashear (cifrar) contrasenas de forma segura
 // Nunca se guarda la contrasena en texto plano en la base de datos
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { loginUsuario, crearAdminDB, cambiarEstadoAdminDB, editarAdminDB, obtenerAdminPorIdDB } = require("../models/usuarioModel");
 
 const login = async (req, res) => {
@@ -31,9 +32,15 @@ const login = async (req, res) => {
       });
     }
 
-    // Solo retorna los datos necesarios del usuario, nunca la contrasena
+    const token = jwt.sign(
+      { id_usuario: usuario.id_usuario, email: usuario.email, rol: usuario.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+
     res.json({
       mensaje: "Login exitoso",
+      token,
       usuario: {
         id_usuario: usuario.id_usuario,
         nombre: usuario.nombre,

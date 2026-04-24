@@ -6,11 +6,9 @@ export default function ProtectedRoute({ children }: any) {
 
   // localStorage es un almacenamiento del navegador que persiste aunque se recargue la pagina.
   // Al hacer login se guarda el usuario ahi, y aqui se verifica si existe ese dato.
-  const usuario = localStorage.getItem("usuario");
+  const token = localStorage.getItem("token");
 
-  // Si no hay usuario guardado, redirige al inicio usando el componente Navigate
-  // En lugar de renderizar la pagina protegida, renderiza la redireccion
-  if (!usuario) {
+  if (!token) {
     return <Navigate to="/" />;
   }
 

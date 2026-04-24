@@ -1,6 +1,7 @@
 // Servicio que maneja todas las peticiones HTTP relacionadas con usuarios administradores
 
 import { API } from "../config/api";
+import { authHeaders } from "../config/auth";
 
 // Autentica al usuario con email y contrasena
 export const login = async (email: string, password: string) => {
@@ -30,37 +31,29 @@ export const login = async (email: string, password: string) => {
 
 // Crea un nuevo administrador. "any" permite cualquier tipo de dato (evitar en lo posible)
 export const crearAdmin = async (data: any) => {
-  const response = await fetch(API.personas, {
+  const response = await fetch(API.usuarios, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: authHeaders(),
     body: JSON.stringify(data)
   });
 
-  if (!response.ok) {
-    throw new Error("Error creando administrador");
-  }
+  if (!response.ok) throw new Error("Error creando administrador");
 
   return await response.json();
 };
 
-// Retorna la lista de todos los administradores
 export const obtenerAdmins = async () => {
-  const response = await fetch(API.personas);
+  const response = await fetch(API.usuarios, { headers: authHeaders() });
 
   if (!response.ok) throw new Error("Error obteniendo admins");
 
   return await response.json();
 };
 
-// Activa o inactiva un administrador segun el valor de estado (1=activo, 0=inactivo)
 export const cambiarEstadoAdmin = async (id: number, estado: number) => {
-  const response = await fetch(`${API.personas}/${id}/estado`, {
+  const response = await fetch(`${API.usuarios}/${id}/estado`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: authHeaders(),
     body: JSON.stringify({ estado })
   });
 
@@ -69,22 +62,18 @@ export const cambiarEstadoAdmin = async (id: number, estado: number) => {
   return await response.json();
 };
 
-// Obtiene los datos de un administrador especifico por su ID
 export const obtenerAdminPorId = async (id: number) => {
-  const response = await fetch(`${API.personas}/${id}`);
+  const response = await fetch(`${API.usuarios}/${id}`, { headers: authHeaders() });
 
   if (!response.ok) throw new Error("Error obteniendo admin");
 
   return await response.json();
 };
 
-// Edita el nombre, email y opcionalmente la contrasena de un administrador
 export const editarAdmin = async (id: number, data: any) => {
-  const response = await fetch(`${API.personas}/${id}`, {
+  const response = await fetch(`${API.usuarios}/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: authHeaders(),
     body: JSON.stringify(data)
   });
 

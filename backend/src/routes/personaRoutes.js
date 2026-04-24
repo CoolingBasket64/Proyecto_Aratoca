@@ -1,10 +1,9 @@
 const express = require("express");
-
-// Router es un mini-servidor de Express que agrupa rutas relacionadas
 const router = express.Router();
+const verificarToken = require("../middleware/authMiddleware");
 
-// Importa las funciones del controlador que se ejecutaran cuando llegue cada peticion
 const {
+  obtenerPersonasPublicas,
   obtenerPersonas,
   crearPersona,
   editarPersona,
@@ -12,6 +11,12 @@ const {
   obtenerPersonaPorId,
   buscarCuidadorPorDocumento
 } = require("../controllers/personaController");
+
+// Ruta publica: solo devuelve campos no sensibles, sin token
+router.get("/publico", obtenerPersonasPublicas);
+
+// Todas las rutas debajo requieren autenticacion
+router.use(verificarToken);
 
 // GET /api/personas -> retorna la lista de todas las personas
 router.get("/", obtenerPersonas);

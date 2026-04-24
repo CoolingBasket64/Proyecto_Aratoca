@@ -1,8 +1,14 @@
 // Importa las funciones del modelo que ejecutan las consultas SQL
-const { obtenerPersonasDB } = require("../models/personaModel");
-const { insertarPersonaDB } = require("../models/personaModel");
-const { editarPersonaDB } = require("../models/personaModel");
-const { cambiarEstadoPersonaDB } = require("../models/personaModel");
+const { obtenerPersonasPublicasDB, obtenerPersonasDB, insertarPersonaDB, editarPersonaDB, cambiarEstadoPersonaDB } = require("../models/personaModel");
+
+const obtenerPersonasPublicas = async (req, res) => {
+  try {
+    const personas = await obtenerPersonasPublicasDB();
+    res.json(personas);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 
 // Los controladores son funciones que reciben la peticion (req) y envian la respuesta (res)
 // req contiene todo lo que manda el cliente: parametros, cuerpo, headers, etc.
@@ -93,4 +99,4 @@ const buscarCuidadorPorDocumento = async (req, res) => {
 };
 
 // Exporta todas las funciones para que las rutas puedan usarlas
-module.exports = { obtenerPersonas, crearPersona, editarPersona, cambiarEstadoPersona, obtenerPersonaPorId, buscarCuidadorPorDocumento };
+module.exports = { obtenerPersonasPublicas, obtenerPersonas, crearPersona, editarPersona, cambiarEstadoPersona, obtenerPersonaPorId, buscarCuidadorPorDocumento };
