@@ -1,10 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
+
+// Barra lateral de navegacion que aparece en todas las paginas del panel de administrador
 export default function Sidebar() {
 
+  // useNavigate retorna una funcion que permite cambiar de pagina programaticamente
+  // (sin que el usuario haga clic en un enlace)
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
+    // Elimina los datos del usuario del localStorage para cerrar la sesion
+    // Despues de esto, ProtectedRoute bloqueara el acceso a las rutas privadas
     localStorage.removeItem("usuario");
     navigate("/");
   };
@@ -14,6 +20,8 @@ export default function Sidebar() {
 
       <h2 className="sidebar-title">Aratoca</h2>
 
+      {/* Link es el componente de React Router para navegar entre paginas
+          sin recargar el navegador, a diferencia de una etiqueta <a> normal */}
       <nav className="sidebar-menu">
 
         <Link to="/dashboard" className="sidebar-link">

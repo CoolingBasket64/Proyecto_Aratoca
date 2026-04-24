@@ -5,18 +5,28 @@ import "../login.css";
 
 export default function Login() {
 
+  // useNavigate permite redirigir al usuario a otra pagina desde el codigo
   const navigate = useNavigate();
 
+  // useState crea una variable reactiva: cuando cambia su valor, React re-renderiza el componente.
+  // El primer valor es el estado actual, el segundo es la funcion para actualizarlo.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
 
     try {
-
+      // Llama al servicio que hace fetch al backend con las credenciales
       const data = await login(email, password);
+
+      // Guarda los datos del usuario en localStorage para mantener la sesion activa
+      // JSON.stringify convierte el objeto a texto porque localStorage solo guarda strings
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
+
+      // Redirige al dashboard. "replace: true" evita que el usuario pueda
+      // volver al login con el boton "atras" del navegador
       navigate("/dashboard", { replace: true });
+
       console.log("Login exitoso:", data);
 
       alert("Login exitoso");
@@ -24,9 +34,8 @@ export default function Login() {
       navigate("/dashboard");
 
     } catch (error: any) {
-
+      // Si el backend respondio con error (credenciales incorrectas), muestra el mensaje
       alert(error.message);
-
     }
 
   };
@@ -36,8 +45,10 @@ export default function Login() {
 
       <div className="login-card">
 
-        <center><h2>Iniciar sesión</h2></center>
+        <center><h2>Iniciar sesion</h2></center>
 
+        {/* Cada input esta controlado por React: su valor viene del estado
+            y cada cambio actualiza el estado mediante onChange */}
         <input
           type="text"
           placeholder="Email"
@@ -47,7 +58,7 @@ export default function Login() {
 
         <input
           type="password"
-          placeholder="Contraseña"
+          placeholder="Contrasena"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -60,7 +71,7 @@ export default function Login() {
           className="btn-volver"
           onClick={() => navigate("/")}
         >
-          ← Volver
+          Volver
         </button>
 
       </div>

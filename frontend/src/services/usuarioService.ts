@@ -1,4 +1,8 @@
+// Servicio que maneja todas las peticiones HTTP relacionadas con usuarios administradores
+
 const API_URL = "http://localhost:7800/api/usuarios";
+
+// Autentica al usuario con email y contrasena
 export const login = async (email: string, password: string) => {
 
   const response = await fetch(`${API_URL}/login`, {
@@ -6,6 +10,7 @@ export const login = async (email: string, password: string) => {
     headers: {
       "Content-Type": "application/json",
     },
+    // JSON.stringify convierte el objeto {email, password} a texto para enviarlo en el body
     body: JSON.stringify({
       email,
       password
@@ -14,6 +19,8 @@ export const login = async (email: string, password: string) => {
 
   const data = await response.json();
 
+  // Si el servidor responde con un error (ej: 401 credenciales incorrectas),
+  // lanza un Error con el mensaje del servidor para mostrarselo al usuario
   if (!response.ok) {
     throw new Error(data.mensaje || "Error en login");
   }
@@ -21,6 +28,7 @@ export const login = async (email: string, password: string) => {
   return data;
 };
 
+// Crea un nuevo administrador. "any" permite cualquier tipo de dato (evitar en lo posible)
 export const crearAdmin = async (data: any) => {
   const response = await fetch(API_URL, {
     method: "POST",
@@ -37,6 +45,7 @@ export const crearAdmin = async (data: any) => {
   return await response.json();
 };
 
+// Retorna la lista de todos los administradores
 export const obtenerAdmins = async () => {
   const response = await fetch(API_URL);
 
@@ -45,6 +54,7 @@ export const obtenerAdmins = async () => {
   return await response.json();
 };
 
+// Activa o inactiva un administrador segun el valor de estado (1=activo, 0=inactivo)
 export const cambiarEstadoAdmin = async (id: number, estado: number) => {
   const response = await fetch(`${API_URL}/${id}/estado`, {
     method: "PATCH",
@@ -59,6 +69,7 @@ export const cambiarEstadoAdmin = async (id: number, estado: number) => {
   return await response.json();
 };
 
+// Obtiene los datos de un administrador especifico por su ID
 export const obtenerAdminPorId = async (id: number) => {
   const response = await fetch(`${API_URL}/${id}`);
 
@@ -67,6 +78,7 @@ export const obtenerAdminPorId = async (id: number) => {
   return await response.json();
 };
 
+// Edita el nombre, email y opcionalmente la contrasena de un administrador
 export const editarAdmin = async (id: number, data: any) => {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",

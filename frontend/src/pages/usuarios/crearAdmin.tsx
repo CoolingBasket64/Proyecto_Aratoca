@@ -8,11 +8,21 @@ import { crearAdmin, editarAdmin, obtenerAdminPorId } from "../../services/usuar
 export default function CrearAdmin() {
 
   const navigate = useNavigate();
+
+  // useParams lee los parametros de la URL. Si la URL es /crear-admin/5, id = "5"
+  // Si la URL es /crear-admin (sin ID), id = undefined
   const { id } = useParams();
+
+  // useLocation da acceso al estado que se puede pasar al navegar entre paginas
+  // Se usa para saber si venimos de "gestionar" y poder volver al lugar correcto
   const location = useLocation();
   const from = location.state?.from;
+
+  // Si hay un ID en la URL, es edicion. Si no hay ID, es creacion
+  // !! convierte cualquier valor a booleano: !!undefined = false, !!"5" = true
   const esEdicion = !!id;
 
+  // Estado del formulario: un objeto con todos los campos del admin
   const [form, setForm] = useState({
     nombre: "",
     email: "",
@@ -22,7 +32,8 @@ export default function CrearAdmin() {
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"success" | "error">("success");
 
-  // 🔥 Cargar admin si es edición
+  // useEffect con [id] como dependencia: se ejecuta cada vez que cambia el valor de "id"
+  // Si es edicion (hay ID), carga los datos del admin para prellenar el formulario
   useEffect(() => {
     if (esEdicion) {
       cargarAdmin();
@@ -36,17 +47,19 @@ export default function CrearAdmin() {
       setForm({
         nombre: data.nombre || "",
         email: data.email || "",
-        password: "" // 🔥 nunca cargar password
+        password: "" // La contrasena nunca se precarga por seguridad
       });
 
     } catch (error) {
       console.error(error);
-      setMensaje("Error cargando administrador ❌");
+      setMensaje("Error cargando administrador");
       setTipoMensaje("error");
     }
   };
 
-  // 🔄 Manejo de inputs
+  // Maneja cualquier cambio en los inputs del formulario.
+  // [e.target.name] usa el nombre del input como clave del objeto (nombre dinamico de propiedad)
+  // El operador spread (...form) copia todas las propiedades actuales y solo sobreescribe la que cambio
   const handleChange = (e: any) => {
     setForm({
       ...form,
@@ -54,28 +67,30 @@ export default function CrearAdmin() {
     });
   };
 
-  // 🚀 Submit (crear o editar)
+  // Se ejecuta al enviar el formulario
   const handleSubmit = async (e: any) => {
+    // Evita que el formulario recargue la pagina (comportamiento por defecto del navegador)
     e.preventDefault();
 
     try {
       if (esEdicion) {
         await editarAdmin(Number(id), form);
-        setMensaje("Administrador actualizado correctamente ✅");
+        setMensaje("Administrador actualizado correctamente");
       } else {
         await crearAdmin(form);
-        setMensaje("Administrador creado correctamente ✅");
+        setMensaje("Administrador creado correctamente");
       }
 
       setTipoMensaje("success");
 
+      // Espera 1.5 segundos para que el usuario vea el mensaje y luego navega
       setTimeout(() => {
         navigate("/gestionar-admin");
       }, 1500);
 
     } catch (error) {
       console.error(error);
-      setMensaje("Ocurrió un error ❌");
+      setMensaje("Ocurrio un error");
       setTipoMensaje("error");
     }
   };
@@ -89,6 +104,7 @@ export default function CrearAdmin() {
 
         <div className="dashboard-container dashboard-container-form">
 
+          {/* Boton volver: regresa a "gestionar" o al "dashboard" segun de donde vino */}
           <button
             className="btn-volver-dashboard"
             onClick={() => {
@@ -102,11 +118,11 @@ export default function CrearAdmin() {
             Volver
           </button>
 
+          {/* El titulo cambia segun si es creacion o edicion */}
           <h2>
             {esEdicion ? "Editar Administrador" : "Crear Administrador"}
           </h2>
 
-          {/* 🔥 MENSAJE */}
           {mensaje && (
             <div className={`alerta ${tipoMensaje}`}>
               {mensaje}
@@ -119,8 +135,11 @@ export default function CrearAdmin() {
 
             <input name="email" type="email" placeholder="Correo" value={form.email} onChange={handleChange} required />
 
-            <input type="password" name="password" placeholder={ esEdicion ? "Nueva contraseña (opcional)" : "Contraseña"
-            }
+            {/* En edicion la contrasena es opcional, en creacion es obligatoria */}
+            <input
+              type="password"
+              name="password"
+              placeholder={esEdicion ? "Nueva contrasena (opcional)" : "Contrasena"}
               value={form.password}
               onChange={handleChange}
               required={!esEdicion}
