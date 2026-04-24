@@ -27,6 +27,7 @@ export interface Persona {
   primer_apellido: string;
   segundo_apellido: string;
   fecha_nacimiento: string;
+  cod_tipo_doc: string;
   edad: number;
   sexo: string;
   discapacidad: string;

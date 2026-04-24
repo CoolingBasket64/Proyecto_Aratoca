@@ -15,6 +15,7 @@ const obtenerPersonasDB = () => {
         p.rlcpd,
         p.tiene_cuidador,
         p.activo,
+        p.cod_tipo_doc,
         u.zona,
         u.vereda,
         u.cod_sector,
