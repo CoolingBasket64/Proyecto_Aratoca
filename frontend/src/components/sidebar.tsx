@@ -1,17 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 
-// Barra lateral de navegacion que aparece en todas las paginas del panel de administrador
+// Sidebar es la barra lateral de navegacion que aparece en todas las paginas del panel admin.
+// Se incluye en cada pagina privada directamente (no en App.tsx) para mayor control.
 export default function Sidebar() {
 
-  // useNavigate retorna una funcion que permite cambiar de pagina programaticamente
-  // (sin que el usuario haga clic en un enlace)
+  // useNavigate retorna una funcion para cambiar de pagina desde el codigo (navegacion programatica).
+  // Es distinto a <Link> que navega al hacer clic; useNavigate permite navegar despues de una accion.
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
-    // Elimina los datos del usuario del localStorage para cerrar la sesion
-    // Despues de esto, ProtectedRoute bloqueara el acceso a las rutas privadas
+    // Eliminamos ambos datos de sesion del localStorage.
+    // "token": el JWT que autentica las peticiones al backend.
+    // "usuario": los datos del usuario (nombre, email, rol) que se muestran en la UI.
+    // Al borrarlos, ProtectedRoute bloqueara el acceso a cualquier ruta privada.
+    localStorage.removeItem("token");
     localStorage.removeItem("usuario");
+    // Redirige al usuario a la pagina de inicio
     navigate("/");
   };
 
@@ -20,8 +25,9 @@ export default function Sidebar() {
 
       <h2 className="sidebar-title">Aratoca</h2>
 
-      {/* Link es el componente de React Router para navegar entre paginas
-          sin recargar el navegador, a diferencia de una etiqueta <a> normal */}
+      {/* Link es el componente de React Router para navegar entre paginas.
+          A diferencia de <a href="...">, Link NO recarga el navegador.
+          Solo actualiza la URL y renderiza el nuevo componente, preservando el estado de la app. */}
       <nav className="sidebar-menu">
 
         <Link to="/dashboard" className="sidebar-link">

@@ -34,7 +34,7 @@ export default function Mapa({
     "SAN ANTONIO": "#3498db",
     "SAN PEDRO": "#2ecc71",
     CLAVELLINAS: "#f1c40f",
-    RURAL: "#a411df",
+    URBANO: "#a411df",
   };
 
   // Funcion que define el estilo visual de cada sector segun su vereda y si esta seleccionado

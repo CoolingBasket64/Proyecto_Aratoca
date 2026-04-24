@@ -5,6 +5,7 @@ const obtenerPersonasPublicasDB = () => {
     const sql = `
       SELECT
         p.id_persona,
+        p.codigo,
         p.edad,
         p.sexo,
         p.discapacidad,

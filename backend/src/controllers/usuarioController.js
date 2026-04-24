@@ -1,116 +1,128 @@
-// bcrypt es una libreria para hashear (cifrar) contrasenas de forma segura
-// Nunca se guarda la contrasena en texto plano en la base de datos
+// bcrypt es una libreria de hashing de contrasenas.
+// "Hashear" significa convertir una contrasena en una cadena irreversible.
+// Nunca se guarda la contrasena original en la base de datos, solo el hash.
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { loginUsuario, crearAdminDB, cambiarEstadoAdminDB, editarAdminDB, obtenerAdminPorIdDB } = require("../models/usuarioModel");
 
+// jsonwebtoken permite generar y verificar tokens JWT.
+// Al hacer login exitoso, se genera un token que el cliente guarda y envia en cada peticion.
+const jwt = require("jsonwebtoken");
+
+const {
+  loginUsuario, crearAdminDB, cambiarEstadoAdminDB, editarAdminDB, obtenerAdminPorIdDB
+} = require("../models/usuarioModel");
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOGIN
+// POST /api/usuarios/login
+// Recibe email y password, verifica las credenciales y devuelve un token JWT.
+// ─────────────────────────────────────────────────────────────────────────────
 const login = async (req, res) => {
-  // Extrae email y password del cuerpo de la peticion
+  // Desestructuramos solo los campos que necesitamos del cuerpo de la peticion
   const { email, password } = req.body;
 
   try {
-    // Busca en la base de datos si existe un usuario con ese email
+    // Busca en la base de datos si existe un usuario con ese email.
+    // Retorna un array; si esta vacio, el usuario no existe.
     const result = await loginUsuario(email);
 
-    // Si no hay resultados, el usuario no existe
     if (result.length === 0) {
-      return res.status(401).json({
-        mensaje: "Usuario o contrasena incorrectos"
-      });
+      // Usamos el mismo mensaje para usuario inexistente y contrasena incorrecta.
+      // Dar mensajes distintos ayudaria a un atacante a saber si el email existe.
+      return res.status(401).json({ mensaje: "Usuario o contrasena incorrectos" });
     }
 
     const usuario = result[0];
 
-    // bcrypt.compare compara la contrasena que escribio el usuario
-    // con el hash guardado en la base de datos sin descifrarlo
-    // Retorna true si coinciden, false si no
+    // bcrypt.compare() toma la contrasena que escribio el usuario y el hash guardado en BD.
+    // Internamente aplica el mismo algoritmo y compara los resultados.
+    // Retorna true si coinciden, false si no. NUNCA descifra el hash guardado.
     const passwordValido = await bcrypt.compare(password, usuario.password);
 
     if (!passwordValido) {
-      return res.status(401).json({
-        mensaje: "Usuario o contrasena incorrectos"
-      });
+      return res.status(401).json({ mensaje: "Usuario o contrasena incorrectos" });
     }
 
+    // jwt.sign() genera el token con tres argumentos:
+    //   1. payload: datos que queremos guardar dentro del token (se pueden leer pero no modificar)
+    //   2. secret:  clave secreta para firmar el token (guardada en .env, nunca en el codigo)
+    //   3. options: configuracion, expiresIn define cuanto tiempo es valido el token
     const token = jwt.sign(
       { id_usuario: usuario.id_usuario, email: usuario.email, rol: usuario.rol },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      { expiresIn: "8h" } // El token expira en 8 horas; el usuario debera volver a hacer login
     );
 
+    // Enviamos el token y los datos del usuario al frontend.
+    // El frontend guarda el token en localStorage y lo envia en cada peticion siguiente.
+    // NUNCA incluimos la contrasena en la respuesta.
     res.json({
       mensaje: "Login exitoso",
       token,
       usuario: {
         id_usuario: usuario.id_usuario,
-        nombre: usuario.nombre,
-        email: usuario.email,
-        rol: usuario.rol
+        nombre:     usuario.nombre,
+        email:      usuario.email,
+        rol:        usuario.rol
       }
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      mensaje: "Error en el servidor"
-    });
+    res.status(500).json({ mensaje: "Error en el servidor" });
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CREAR ADMINISTRADOR
+// POST /api/usuarios
+// Crea un nuevo usuario con rol 'admin'. Requiere token (ruta privada).
+// ─────────────────────────────────────────────────────────────────────────────
 const crearAdmin = async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
 
-    // Valida que todos los campos sean obligatorios antes de continuar
+    // Validaciones basicas antes de tocar la base de datos
     if (!nombre || !email || !password) {
-      return res.status(400).json({
-        mensaje: "Todos los campos son obligatorios"
-      });
+      return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
     }
 
-    // Valida que la contrasena tenga minimo 6 caracteres
     if (password.length < 6) {
-      return res.status(400).json({
-        mensaje: "La contrasena debe tener minimo 6 caracteres"
-      });
+      return res.status(400).json({ mensaje: "La contrasena debe tener minimo 6 caracteres" });
     }
 
-    // Hashea la contrasena antes de guardarla
-    // El numero 10 es el "costo" del algoritmo: entre mas alto, mas seguro pero mas lento
+    // bcrypt.hash() convierte la contrasena a un hash de forma irreversible.
+    // El numero 10 es el "factor de costo" (salt rounds): cuanto mas alto, mas lento pero mas seguro.
+    // Un factor de 10 es el estandar recomendado para aplicaciones web.
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const nuevoUsuario = {
-      nombre,
-      email,
-      password: hashedPassword // Se guarda el hash, nunca la contrasena original
-    };
-
+    const nuevoUsuario = { nombre, email, password: hashedPassword };
     const resultado = await crearAdminDB(nuevoUsuario);
 
     res.status(201).json({
       mensaje: "Administrador creado correctamente",
-      id: resultado.insertId
+      id: resultado.insertId // insertId es el ID auto-generado por MySQL para el nuevo registro
     });
 
   } catch (error) {
     console.error(error);
-    // ER_DUP_ENTRY es el codigo de error de MySQL cuando se intenta insertar un valor duplicado
-    // en una columna con restriccion UNIQUE (como el email)
+
+    // ER_DUP_ENTRY es el codigo de error de MySQL cuando se intenta insertar un valor
+    // duplicado en una columna con restriccion UNIQUE (como el email).
     if (error.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({
-        mensaje: "El correo ya esta registrado"
-      });
+      return res.status(400).json({ mensaje: "El correo ya esta registrado" });
     }
 
-    res.status(500).json({
-      mensaje: "Error al crear administrador"
-    });
+    res.status(500).json({ mensaje: "Error al crear administrador" });
   }
 };
 
 // Se importa aqui porque fue agregado despues del bloque inicial de importaciones
 const { obtenerAdminsDB } = require("../models/usuarioModel");
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER TODOS LOS ADMINISTRADORES
+// GET /api/usuarios
+// ─────────────────────────────────────────────────────────────────────────────
 const obtenerAdmins = async (req, res) => {
   try {
     const admins = await obtenerAdminsDB();
@@ -120,6 +132,11 @@ const obtenerAdmins = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CAMBIAR ESTADO DE UN ADMINISTRADOR
+// PATCH /api/usuarios/:id/estado
+// Activa (estado=1) o inactiva (estado=0) un administrador.
+// ─────────────────────────────────────────────────────────────────────────────
 const cambiarEstadoAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -129,7 +146,6 @@ const cambiarEstadoAdmin = async (req, res) => {
     console.log("Estado:", estado);
 
     await cambiarEstadoAdminDB(id, estado);
-
     res.json({ mensaje: "Estado actualizado" });
 
   } catch (error) {
@@ -138,58 +154,54 @@ const cambiarEstadoAdmin = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EDITAR ADMINISTRADOR
+// PUT /api/usuarios/:id
+// Actualiza nombre, email y opcionalmente la contrasena.
+// ─────────────────────────────────────────────────────────────────────────────
 const editarAdmin = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre, email, password } = req.body;
 
     // Siempre se actualiza nombre y email
-    let usuarioActualizado = {
-      nombre,
-      email
-    };
+    let usuarioActualizado = { nombre, email };
 
-    // La contrasena es opcional en edicion: solo se actualiza si el usuario escribio una nueva
+    // La contrasena es opcional: solo se actualiza si el usuario escribio una nueva.
+    // Si no se envia password, el campo existente en la BD no se toca.
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       usuarioActualizado.password = hashedPassword;
     }
 
     await editarAdminDB(id, usuarioActualizado);
-
-    res.json({
-      mensaje: "Administrador actualizado correctamente"
-    });
+    res.json({ mensaje: "Administrador actualizado correctamente" });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      mensaje: "Error al actualizar administrador"
-    });
+    res.status(500).json({ mensaje: "Error al actualizar administrador" });
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER ADMINISTRADOR POR ID
+// GET /api/usuarios/:id
+// ─────────────────────────────────────────────────────────────────────────────
 const obtenerAdminPorId = async (req, res) => {
   try {
     const { id } = req.params;
-
     const admin = await obtenerAdminPorIdDB(id);
 
-    // Si no encuentra el admin, responde con 404
     if (!admin) {
-      return res.status(404).json({
-        mensaje: "Administrador no encontrado"
-      });
+      return res.status(404).json({ mensaje: "Administrador no encontrado" });
     }
 
     res.json(admin);
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      mensaje: "Error obteniendo administrador"
-    });
+    res.status(500).json({ mensaje: "Error obteniendo administrador" });
   }
 };
 
+// Exportamos todas las funciones para que el archivo de rutas pueda usarlas.
 module.exports = { login, crearAdmin, cambiarEstadoAdmin, obtenerAdmins, editarAdmin, obtenerAdminPorId };

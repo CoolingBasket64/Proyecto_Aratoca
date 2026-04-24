@@ -5,40 +5,38 @@ import "../login.css";
 
 export default function Login() {
 
-  // useNavigate permite redirigir al usuario a otra pagina desde el codigo
+  // useNavigate retorna la funcion "navigate" para cambiar de ruta programaticamente.
   const navigate = useNavigate();
 
-  // useState crea una variable reactiva: cuando cambia su valor, React re-renderiza el componente.
+  // useState crea variables reactivas: cuando su valor cambia, React vuelve a renderizar el componente.
   // El primer valor es el estado actual, el segundo es la funcion para actualizarlo.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-
     try {
-      // Llama al servicio que hace fetch al backend con las credenciales
+      // Llama al servicio que hace fetch POST a /api/usuarios/login con las credenciales.
+      // Si las credenciales son incorrectas, el servicio lanza un Error y saltamos al catch.
       const data = await login(email, password);
 
-      // Guarda los datos del usuario en localStorage para mantener la sesion activa
-      // JSON.stringify convierte el objeto a texto porque localStorage solo guarda strings
+      // Guardamos el token JWT en localStorage para usarlo en futuras peticiones al backend.
+      // El token se envia automaticamente en cada fetch a traves de authHeaders().
       localStorage.setItem("token", data.token);
+
+      // Guardamos los datos del usuario (nombre, email, rol) para mostrarlos en la UI.
+      // JSON.stringify convierte el objeto a string porque localStorage solo guarda texto.
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      // Redirige al dashboard. "replace: true" evita que el usuario pueda
-      // volver al login con el boton "atras" del navegador
+      // "replace: true" evita que el usuario pueda volver al login con el boton "atras".
+      // Despues de login, /login ya no debe ser accesible presionando atras.
       navigate("/dashboard", { replace: true });
-
-      console.log("Login exitoso:", data);
 
       alert("Login exitoso");
 
-      navigate("/dashboard");
-
     } catch (error: any) {
-      // Si el backend respondio con error (credenciales incorrectas), muestra el mensaje
+      // error.message contiene el mensaje que lanzo el servicio (ej: "Usuario o contrasena incorrectos")
       alert(error.message);
     }
-
   };
 
   return (
@@ -48,8 +46,9 @@ export default function Login() {
 
         <center><h2>Iniciar sesion</h2></center>
 
-        {/* Cada input esta controlado por React: su valor viene del estado
-            y cada cambio actualiza el estado mediante onChange */}
+        {/* Inputs controlados: su valor viene del estado de React (value={email}),
+            y cada tecla que el usuario presiona actualiza el estado (onChange).
+            Esto permite que React siempre tenga acceso al valor actual del input. */}
         <input
           type="text"
           placeholder="Email"

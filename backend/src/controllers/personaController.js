@@ -1,6 +1,21 @@
-// Importa las funciones del modelo que ejecutan las consultas SQL
-const { obtenerPersonasPublicasDB, obtenerPersonasDB, insertarPersonaDB, editarPersonaDB, cambiarEstadoPersonaDB } = require("../models/personaModel");
+// Los controladores son el puente entre las rutas y los modelos.
+// Reciben la peticion HTTP (req), llaman al modelo correspondiente y envian la respuesta (res).
+// Toda la logica de negocio (validaciones, transformaciones) vive aqui.
+// Los modelos solo ejecutan SQL; los controladores deciden QUE hacer con los datos.
+const {
+  obtenerPersonasPublicasDB,
+  obtenerPersonasDB,
+  insertarPersonaDB,
+  editarPersonaDB,
+  cambiarEstadoPersonaDB
+} = require("../models/personaModel");
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER PERSONAS PUBLICAS (sin autenticacion)
+// GET /api/personas/publico
+// Devuelve solo los campos no sensibles para el mapa de la pagina de inicio.
+// No incluye nombre, documento, celular ni datos del cuidador.
+// ─────────────────────────────────────────────────────────────────────────────
 const obtenerPersonasPublicas = async (req, res) => {
   try {
     const personas = await obtenerPersonasPublicasDB();
@@ -10,42 +25,51 @@ const obtenerPersonasPublicas = async (req, res) => {
   }
 };
 
-// Los controladores son funciones que reciben la peticion (req) y envian la respuesta (res)
-// req contiene todo lo que manda el cliente: parametros, cuerpo, headers, etc.
-// res es el objeto con el que respondemos al cliente
-
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER TODAS LAS PERSONAS (requiere autenticacion)
+// GET /api/personas
+// Devuelve todos los campos incluyendo datos sensibles. Solo para admins logueados.
+// ─────────────────────────────────────────────────────────────────────────────
 const obtenerPersonas = async (req, res) => {
   try {
-    // Llama al modelo para obtener todas las personas de la base de datos
     const personas = await obtenerPersonasDB();
-    // Responde con la lista en formato JSON
     res.json(personas);
   } catch (error) {
-    // Si ocurre un error en la base de datos, responde con codigo 500 (error del servidor)
+    // Codigo 500 = error interno del servidor (algo fallo en la BD o en el codigo)
     res.status(500).json(error);
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CREAR PERSONA
+// POST /api/personas
+// req.body contiene todos los datos del formulario enviados por el frontend.
+// ─────────────────────────────────────────────────────────────────────────────
 const crearPersona = async (req, res) => {
   try {
-    // req.body contiene los datos enviados por el frontend en formato JSON
     const persona = req.body;
     const resultado = await insertarPersonaDB(persona);
-    // Responde con codigo 201 (creado exitosamente) y el ID del nuevo registro
-    res.status(201).json({ mensaje: "Persona creada", id: resultado.insertId });
+    // 201 = "Created": codigo HTTP estandar para recursos creados exitosamente.
+    // resultado.persona.insertId es el ID auto-generado por MySQL para el nuevo registro.
+    res.status(201).json({ mensaje: "Persona creada", id: resultado.persona.insertId });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al crear persona" });
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EDITAR PERSONA
+// PUT /api/personas/:id
+// req.params.id captura el segmento dinamico :id de la URL (ej: /api/personas/5 -> id = "5")
+// ─────────────────────────────────────────────────────────────────────────────
 const editarPersona = async (req, res) => {
   try {
-    // req.params.id captura el valor del segmento :id de la URL (ej: /api/personas/5)
     const id = req.params.id;
     const persona = req.body;
     const resultado = await editarPersonaDB(id, persona);
-    // affectedRows indica cuantas filas fueron modificadas en la base de datos
+    // affectedRows indica cuantas filas modifico el UPDATE en la base de datos.
+    // Si es 0, el ID no existe; si es 1, la actualizacion fue exitosa.
     res.json({ mensaje: "Persona actualizada", affectedRows: resultado.affectedRows });
   } catch (error) {
     console.error(error);
@@ -53,10 +77,15 @@ const editarPersona = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CAMBIAR ESTADO DE UNA PERSONA (activar/inactivar)
+// PATCH /api/personas/:id/inactivar
+// Se usa PATCH porque solo se actualiza un campo (activo), no el registro completo.
+// ─────────────────────────────────────────────────────────────────────────────
 const cambiarEstadoPersona = async (req, res) => {
   try {
     const id = req.params.id;
-    // Desestructura del cuerpo de la peticion solo las propiedades que necesita
+    // Desestructuracion: extrae solo "estado" y "razon" de req.body, ignorando el resto
     const { estado, razon } = req.body;
 
     const resultado = await cambiarEstadoPersonaDB(id, estado, razon);
@@ -65,7 +94,6 @@ const cambiarEstadoPersona = async (req, res) => {
       mensaje: "Estado actualizado correctamente",
       affectedRows: resultado.affectedRows
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al cambiar estado" });
@@ -75,6 +103,11 @@ const cambiarEstadoPersona = async (req, res) => {
 // Se importan aqui porque se agregaron despues de las primeras importaciones
 const { obtenerPersonaPorIdDB, buscarCuidadorPorDocumentoDB } = require("../models/personaModel");
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER PERSONA POR ID
+// GET /api/personas/:id
+// Devuelve todos los datos de una persona incluyendo ubicacion y cuidador anidado.
+// ─────────────────────────────────────────────────────────────────────────────
 const obtenerPersonaPorId = async (req, res) => {
   try {
     const id = req.params.id;
@@ -85,12 +118,17 @@ const obtenerPersonaPorId = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSCAR CUIDADOR POR DOCUMENTO
+// GET /api/personas/cuidador/:documento
+// Permite al formulario de creacion buscar si ya existe un cuidador con ese documento
+// para autocompletar sus datos y evitar duplicados.
+// ─────────────────────────────────────────────────────────────────────────────
 const buscarCuidadorPorDocumento = async (req, res) => {
   try {
-    // El documento viene como parametro en la URL: /api/personas/cuidador/123456
     const { documento } = req.params;
     const cuidador = await buscarCuidadorPorDocumentoDB(documento);
-    // Si no existe el cuidador, responde con 404 (no encontrado)
+    // 404 = "Not Found": el cuidador no existe, el frontend lo manejara mostrando el formulario vacio
     if (!cuidador) return res.status(404).json({ mensaje: "Cuidador no encontrado" });
     res.json(cuidador);
   } catch (error) {
@@ -98,5 +136,12 @@ const buscarCuidadorPorDocumento = async (req, res) => {
   }
 };
 
-// Exporta todas las funciones para que las rutas puedan usarlas
-module.exports = { obtenerPersonasPublicas, obtenerPersonas, crearPersona, editarPersona, cambiarEstadoPersona, obtenerPersonaPorId, buscarCuidadorPorDocumento };
+module.exports = {
+  obtenerPersonasPublicas,
+  obtenerPersonas,
+  crearPersona,
+  editarPersona,
+  cambiarEstadoPersona,
+  obtenerPersonaPorId,
+  buscarCuidadorPorDocumento
+};

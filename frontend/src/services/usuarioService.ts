@@ -1,83 +1,88 @@
-// Servicio que maneja todas las peticiones HTTP relacionadas con usuarios administradores
+// Servicio que centraliza todas las llamadas HTTP relacionadas con usuarios administradores.
+// Separa la logica de red de los componentes de UI.
 
 import { API } from "../config/api";
+// authHeaders() agrega el token JWT a cada peticion protegida
 import { authHeaders } from "../config/auth";
 
-// Autentica al usuario con email y contrasena
+// ─────────────────────────────────────────────────────────────────────────────
+// LOGIN (ruta publica, no necesita token)
+// Envia email y password al backend y recibe el token JWT + datos del usuario.
+// ─────────────────────────────────────────────────────────────────────────────
 export const login = async (email: string, password: string) => {
-
   const response = await fetch(`${API.usuarios}/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // JSON.stringify convierte el objeto {email, password} a texto para enviarlo en el body
-    body: JSON.stringify({
-      email,
-      password
-    }),
+    headers: { "Content-Type": "application/json" }, // No enviamos token aqui: el usuario aun no lo tiene
+    body: JSON.stringify({ email, password }),
   });
 
   const data = await response.json();
 
-  // Si el servidor responde con un error (ej: 401 credenciales incorrectas),
-  // lanza un Error con el mensaje del servidor para mostrarselo al usuario
+  // Si el servidor respondio con error (ej: 401 credenciales incorrectas),
+  // lanzamos un Error con el mensaje del servidor para mostrarselo al usuario.
   if (!response.ok) {
     throw new Error(data.mensaje || "Error en login");
   }
 
-  return data;
+  return data; // { token, usuario: { id_usuario, nombre, email, rol } }
 };
 
-// Crea un nuevo administrador. "any" permite cualquier tipo de dato (evitar en lo posible)
+// ─────────────────────────────────────────────────────────────────────────────
+// CREAR ADMINISTRADOR (requiere token)
+// ─────────────────────────────────────────────────────────────────────────────
 export const crearAdmin = async (data: any) => {
   const response = await fetch(API.usuarios, {
     method: "POST",
-    headers: authHeaders(),
+    headers: authHeaders(), // Incluye token porque solo admins logueados pueden crear otros admins
     body: JSON.stringify(data)
   });
 
   if (!response.ok) throw new Error("Error creando administrador");
-
   return await response.json();
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER TODOS LOS ADMINISTRADORES (requiere token)
+// ─────────────────────────────────────────────────────────────────────────────
 export const obtenerAdmins = async () => {
   const response = await fetch(API.usuarios, { headers: authHeaders() });
-
   if (!response.ok) throw new Error("Error obteniendo admins");
-
   return await response.json();
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CAMBIAR ESTADO DE UN ADMINISTRADOR (requiere token)
+// estado: 1 = activo, 0 = inactivo
+// ─────────────────────────────────────────────────────────────────────────────
 export const cambiarEstadoAdmin = async (id: number, estado: number) => {
   const response = await fetch(`${API.usuarios}/${id}/estado`, {
     method: "PATCH",
     headers: authHeaders(),
     body: JSON.stringify({ estado })
   });
-
   if (!response.ok) throw new Error("Error cambiando estado");
-
   return await response.json();
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// OBTENER ADMINISTRADOR POR ID (requiere token)
+// Se usa en el formulario de edicion para cargar los datos actuales del admin.
+// ─────────────────────────────────────────────────────────────────────────────
 export const obtenerAdminPorId = async (id: number) => {
   const response = await fetch(`${API.usuarios}/${id}`, { headers: authHeaders() });
-
   if (!response.ok) throw new Error("Error obteniendo admin");
-
   return await response.json();
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EDITAR ADMINISTRADOR (requiere token)
+// ─────────────────────────────────────────────────────────────────────────────
 export const editarAdmin = async (id: number, data: any) => {
   const response = await fetch(`${API.usuarios}/${id}`, {
     method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify(data)
   });
-
   if (!response.ok) throw new Error("Error actualizando admin");
-
   return await response.json();
 };

@@ -1,11 +1,15 @@
-// Importa la aplicacion Express configurada en app.js
+// Importa la aplicacion Express ya configurada con rutas y middlewares desde app.js.
+// La separacion en dos archivos (app.js y server.js) es una buena practica:
+// app.js define la aplicacion, server.js la arranca.
 const app = require('./src/app');
 
-// Define el puerto: primero busca una variable de entorno PORT,
-// si no existe usa 7800 por defecto
+// process.env.PORT es la variable que plataformas como Vercel o Heroku definen automaticamente
+// para indicar en que puerto debe escuchar el servidor.
+// Si no existe esa variable (ambiente local), usamos 7800 como puerto por defecto.
 const PORT = process.env.PORT || 7800;
 
-// Inicia el servidor y lo pone a escuchar peticiones en el puerto definido
+// app.listen() pone el servidor a escuchar peticiones entrantes en el puerto indicado.
+// El callback se ejecuta una sola vez cuando el servidor arranca exitosamente.
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
