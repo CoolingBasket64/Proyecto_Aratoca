@@ -52,16 +52,27 @@ const cambiarEstadoPersona = async (req, res) => {
   }
 };
 
-const { obtenerPersonaPorIdDB } = require("../models/personaModel");
+const { obtenerPersonaPorIdDB, buscarCuidadorPorDocumentoDB } = require("../models/personaModel");
 
 const obtenerPersonaPorId = async (req, res) => {
   try {
     const id = req.params.id;
     const persona = await obtenerPersonaPorIdDB(id);
-
     res.json(persona);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al obtener persona" });
   }
 };
-module.exports = { obtenerPersonas, crearPersona, editarPersona, cambiarEstadoPersona, obtenerPersonaPorId };
+
+const buscarCuidadorPorDocumento = async (req, res) => {
+  try {
+    const { documento } = req.params;
+    const cuidador = await buscarCuidadorPorDocumentoDB(documento);
+    if (!cuidador) return res.status(404).json({ mensaje: "Cuidador no encontrado" });
+    res.json(cuidador);
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al buscar cuidador" });
+  }
+};
+
+module.exports = { obtenerPersonas, crearPersona, editarPersona, cambiarEstadoPersona, obtenerPersonaPorId, buscarCuidadorPorDocumento };

@@ -36,6 +36,10 @@ export default function Sidebar() {
           ⚙️ Gestionar Usuarios
         </Link>
 
+        <Link to="/reportes" className="sidebar-link">
+          📊 Generar Reportes
+        </Link>
+
       </nav>
 
       <button className="logout-btn" onClick={cerrarSesion}>

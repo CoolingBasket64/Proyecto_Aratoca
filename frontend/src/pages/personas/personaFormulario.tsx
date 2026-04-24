@@ -1,7 +1,7 @@
 import Sidebar from "../../components/sidebar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { crearPersona } from "../../services/personService";
+import { crearPersona, buscarCuidadorPorDocumento } from "../../services/personService";
 import { useParams } from "react-router-dom";
 import { obtenerPersonaPorId, editarPersona } from "../../services/personService";
 import { useEffect } from "react";
@@ -63,11 +63,16 @@ export default function CrearDiscapacitado() {
         ...prev,
         ...data,
 
+        cod_tipo_doc: String(data.cod_tipo_doc || ""),
+        rlcpd: data.rlcpd || "",
+        sexo: data.sexo || "",
+        discapacidad: data.discapacidad || "",
+        zona: data.zona || "",
         fecha_nacimiento: formatDate(data.fecha_nacimiento),
 
         tiene_cuidador: data.tiene_cuidador == 1,
 
-        cuidador_cod_tipo_doc: data.cuidador?.cod_tipo_doc || "",
+        cuidador_cod_tipo_doc: String(data.cuidador?.cod_tipo_doc || ""),
         cuidador_documento: data.cuidador?.documento || "",
         cuidador_primer_nombre: data.cuidador?.primer_nombre || "",
         cuidador_segundo_nombre: data.cuidador?.segundo_nombre || "",
@@ -106,6 +111,34 @@ export default function CrearDiscapacitado() {
 
   const [mensaje, setMensaje] = useState("");
   const [mensajeTipo] = useState<"success" | "error">("success");
+  const [mensajeCuidador, setMensajeCuidador] = useState("");
+
+  const buscarCuidador = async (documento: string) => {
+    if (!documento || documento.length < 4) return;
+    try {
+      const encontrado = await buscarCuidadorPorDocumento(documento);
+      if (encontrado) {
+        setForm((prev) => ({
+          ...prev,
+          cuidador_cod_tipo_doc: String(encontrado.cod_tipo_doc || ""),
+          cuidador_documento: encontrado.documento || "",
+          cuidador_primer_nombre: encontrado.primer_nombre || "",
+          cuidador_segundo_nombre: encontrado.segundo_nombre || "",
+          cuidador_primer_apellido: encontrado.primer_apellido || "",
+          cuidador_segundo_apellido: encontrado.segundo_apellido || "",
+          cuidador_fecha_nacimiento: encontrado.fecha_nacimiento ? encontrado.fecha_nacimiento.split("T")[0] : "",
+          cuidador_sexo: encontrado.sexo || "",
+          cuidador_parentesco: encontrado.parentesco || "",
+          cuidador_celular: encontrado.celular || "",
+        }));
+        setMensajeCuidador("✅ Cuidador encontrado y datos cargados");
+      } else {
+        setMensajeCuidador("");
+      }
+    } catch {
+      setMensajeCuidador("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -151,7 +184,7 @@ export default function CrearDiscapacitado() {
     <div className="dashboard-layout">
       <Sidebar />
       <div className="dashboard-content">
-        <div className="dashboard-container">
+        <div className="dashboard-container dashboard-container-form">
           <button
             type="button"
             className="btn-volver-dashboard"
@@ -295,7 +328,14 @@ export default function CrearDiscapacitado() {
                 </div>
                 <div>
                   <label>Nro Documento</label>
-                  <input name="cuidador_documento" placeholder="Documento" value={form.cuidador_documento} onChange={handleChange} />
+                  <input
+                    name="cuidador_documento"
+                    placeholder="Documento"
+                    value={form.cuidador_documento}
+                    onChange={(e) => { handleChange(e); setMensajeCuidador(""); }}
+                    onBlur={(e) => buscarCuidador(e.target.value)}
+                  />
+                  {mensajeCuidador && <p style={{ color: "green", fontSize: "12px", marginTop: "4px" }}>{mensajeCuidador}</p>}
                 </div>
                 <div>
                   <label>Primer Nombre</label>

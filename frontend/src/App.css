@@ -7,12 +7,17 @@
 html, body, #root {
   height: 100%;
   width: 100%;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
 .app {
-  display: flex;
-  flex-direction: column;
   height: 100vh;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
 }
 
 .nav {
@@ -20,6 +25,60 @@ html, body, #root {
   justify-content: flex-start;
   padding: 15px 25px;
   background: #1e293b;
+}
+
+
+.filtro-discapacidad{
+  padding-top: 10px;
+  padding-bottom: 15px;
+}
+/* Título */
+.filtro-discapacidad h1 {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Select */
+.filtro {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #ccd1d9;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #2c3e50;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  /* quitar estilo nativo */
+  appearance: none;
+
+  /* flecha personalizada */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%232c3e50' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+/* Hover */
+.filtro:hover {
+  border-color: #3498db;
+}
+
+/* Focus */
+.filtro:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Opcional: animación suave al abrir (visual) */
+
+.personas{
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .login-btn {

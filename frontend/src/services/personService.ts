@@ -48,3 +48,10 @@ export const obtenerPersonaPorId = async (id: number): Promise<Persona> => {
   if (!response.ok) throw new Error("Error obteniendo persona");
   return await response.json();
 };
+
+export const buscarCuidadorPorDocumento = async (documento: string) => {
+  const response = await fetch(`${API_URL}/cuidador/${documento}`);
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error("Error buscando cuidador");
+  return await response.json();
+};

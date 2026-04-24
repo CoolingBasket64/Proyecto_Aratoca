@@ -1,53 +1,71 @@
-import { MapContainer, TileLayer, Marker, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Marker } from "react-leaflet";
 import L from "leaflet";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
-import type { Persona } from "../types/person";
 
 interface MapaProps {
-  personas: Persona[] | null;
-  onSelectPersona: (persona: Persona) => void;
+  personas: any[];
+  onSelectPersona: (persona: any) => void;
+  onSelectSector: (codigo: string) => void;
+  onSelectNombreSector: (nombre: string) => void;
 }
 
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: new URL(
-    "leaflet/dist/images/marker-icon-2x.png",
-    import.meta.url
-  ).toString(),
-  iconUrl: new URL(
-    "leaflet/dist/images/marker-icon.png",
-    import.meta.url
-  ).toString(),
-  shadowUrl: new URL(
-    "leaflet/dist/images/marker-shadow.png",
-    import.meta.url
-  ).toString(),
-});
-
-export default function Mapa({ personas, onSelectPersona }: MapaProps) {
+export default function Mapa({
+  personas,
+  onSelectSector,
+  onSelectNombreSector,
+}: MapaProps) {
 
   const [aratoca, setAratoca] = useState<any>(null);
   const [sectores, setSectores] = useState<any>(null);
   const [bounds, setBounds] = useState<L.LatLngBounds | null>(null);
+  const [sectorSeleccionado, setSectorSeleccionado] = useState<string | null>(null);
 
   const coloresVereda: Record<string, string> = {
     CANTABARA: "#e74c3c",
     "SAN ANTONIO": "#3498db",
     "SAN PEDRO": "#2ecc71",
     CLAVELLINAS: "#f1c40f",
+    RURAL: "#a411df",
   };
 
   const estiloSectores = (feature: any) => {
     const vereda = feature.properties.Vereda;
+    const codigo = feature.properties.Codigo;
+
+    const seleccionado = codigo === sectorSeleccionado;
 
     return {
-      color: "black",
-      weight: 0.5,
+      color: seleccionado ? "red" : "black",
+      weight: seleccionado ? 2 : 0.5,
       fillColor: coloresVereda[vereda] || "#298d94",
-      fillOpacity: 0.8,
+      fillOpacity: seleccionado ? 0.9 : 0.7,
     };
+  };
+
+  // 🔥 ICONO DEL CONTADOR
+  const crearIconoContador = (cantidad: number) => {
+    return L.divIcon({
+      html: `
+        <div style="
+          background: #2c3e50;
+          color: white;
+          border-radius: 50%;
+          width: 22px;
+          height: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+          font-weight: bold;
+          border: 2px solid white;
+        ">
+          ${cantidad}
+        </div>
+      `,
+      className: "",
+      iconSize: [28, 28],
+    });
   };
 
   useEffect(() => {
@@ -55,9 +73,8 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
       .then((res) => res.json())
       .then((data) => {
         setAratoca(data);
-
         const layer = L.geoJSON(data);
-        setBounds(layer.getBounds()); 
+        setBounds(layer.getBounds());
       });
 
     fetch("/sectores.geojson")
@@ -65,7 +82,6 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
       .then((data) => {
         setSectores(data);
       });
-
   }, []);
 
   if (!bounds) return null;
@@ -82,16 +98,15 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
+      {/* Límite */}
       {aratoca && (
         <GeoJSON
           data={aratoca}
-          style={{
-            weight: 2,
-            fillOpacity: 0,
-          }}
+          style={{ weight: 2, fillOpacity: 0 }}
         />
       )}
 
+      {/* Sectores */}
       {sectores && (
         <GeoJSON
           data={sectores}
@@ -99,46 +114,54 @@ export default function Mapa({ personas, onSelectPersona }: MapaProps) {
           onEachFeature={(feature, layer) => {
             layer.bindPopup(`
               <strong>Vereda:</strong> ${feature.properties.Vereda}<br/>
-              <strong>Sector:</strong> ${feature.properties.Codigo}
+              <strong>Sector:</strong> ${feature.properties.Sector}
             `);
 
             layer.on({
-              mouseover: (e: any) => {
-                e.target.setStyle({
-                  weight: 2,
-                  fillOpacity: 0.8,
-                });
-              },
-              mouseout: (e: any) => {
-                e.target.setStyle({
-                  weight: 1.5,
-                  fillOpacity: 0.8,
-                });
+              click: () => {
+                const codigo = feature.properties.Codigo;
+                const nombre = feature.properties.Sector;
+
+                setSectorSeleccionado(codigo);
+                onSelectSector(codigo);
+                onSelectNombreSector(nombre);
               },
             });
           }}
         />
       )}
 
-      {/* Personas */}
-      {personas
-        .filter(
-          (persona) =>
-            persona.latitud !== null &&
-            persona.longitud !== null &&
-            !isNaN(Number(persona.latitud)) &&
-            !isNaN(Number(persona.longitud))
-        )
-        
-        .map((persona) => (
-          <Marker
-            key={persona.id_persona}
-            position={[Number(persona.latitud), Number(persona.longitud)]}
-            eventHandlers={{
-              click: () => onSelectPersona(persona),
-            }}
-          />
-        ))}
+      {/* 🔥 CONTADORES */}
+      {sectores &&
+        sectores.features.map((feature: any, index: number) => {
+          const codigo = feature.properties.Codigo;
+
+          const cantidad = personas.filter(
+            (p) => p.cod_sector === codigo
+          ).length;
+
+          const centro = L.geoJSON(feature).getBounds().getCenter();
+
+          return (
+            <Marker
+              key={index}
+              position={[centro.lat, centro.lng]}
+              icon={crearIconoContador(cantidad)}
+              
+              eventHandlers={{
+                
+                click: () => {
+                  const codigo = feature.properties.Codigo;
+                  const nombre = feature.properties.Sector;
+
+                  setSectorSeleccionado(codigo);
+                  onSelectSector(codigo);
+                  onSelectNombreSector(nombre);
+                }
+              }}
+            />
+          );
+        })}
     </MapContainer>
   );
 }

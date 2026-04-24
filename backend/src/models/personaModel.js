@@ -5,18 +5,30 @@ const obtenerPersonasDB = () => {
     return new Promise((resolve, reject) => {
 
         const sql = `
-                    SELECT 
-                      p.id_persona, 
+                    SELECT
+                      p.id_persona,
                       p.codigo,
                       p.documento,
-                      p.nombre_completo, 
-                      p.edad, 
-                      p.sexo, 
+                      p.nombre_completo,
+                      p.edad,
+                      p.sexo,
                       p.discapacidad,
+                      p.rlcpd,
+                      p.tiene_cuidador,
                       p.activo,
-                      u.sector
+                      u.zona,
+                      u.vereda,
+                      u.cod_sector,
+                      u.sector,
+                      c.nombre_completo AS cuidador_nombre,
+                      c.documento AS cuidador_documento,
+                      c.parentesco AS cuidador_parentesco,
+                      c.celular AS cuidador_celular,
+                      c.sexo AS cuidador_sexo,
+                      c.edad AS cuidador_edad
                     FROM personas_discapacidad p
-                    JOIN ubicaciones u ON p.id_ubicacion = u.id_ubicacion;
+                    JOIN ubicaciones u ON p.id_ubicacion = u.id_ubicacion
+                    LEFT JOIN cuidadores c ON c.id_persona = p.id_persona;
                     `;
 
         db.query(sql, (err, result) => {
@@ -365,4 +377,14 @@ const obtenerPersonaPorIdDB = (id) => {
   });
 };
 
-module.exports = { obtenerPersonasDB, insertarPersonaDB, editarPersonaDB, cambiarEstadoPersonaDB, obtenerPersonaPorIdDB };
+const buscarCuidadorPorDocumentoDB = (documento) => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM cuidadores WHERE documento = ? LIMIT 1`;
+    db.query(sql, [documento], (err, result) => {
+      if (err) return reject(err);
+      resolve(result.length > 0 ? result[0] : null);
+    });
+  });
+};
+
+module.exports = { obtenerPersonasDB, insertarPersonaDB, editarPersonaDB, cambiarEstadoPersonaDB, obtenerPersonaPorIdDB, buscarCuidadorPorDocumentoDB };

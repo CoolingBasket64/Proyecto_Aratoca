@@ -26,9 +26,19 @@ export interface Persona {
   discapacidad: string;
   celular?: string;
   activo: number;
+  zona?: string;
+  vereda?: string;
+  cod_sector: string;
   sector: string;
   latitud: number;
   longitud: number;
   tiene_cuidador: number | boolean;
+  rlcpd: string;
   cuidador?: Cuidador | null;
+  cuidador_nombre?: string;
+  cuidador_documento?: string;
+  cuidador_parentesco?: string;
+  cuidador_celular?: string;
+  cuidador_sexo?: string;
+  cuidador_edad?: number;
 }

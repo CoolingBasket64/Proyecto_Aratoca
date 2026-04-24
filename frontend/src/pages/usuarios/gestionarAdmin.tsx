@@ -74,7 +74,7 @@ export default function GestionarAdmin() {
       <Sidebar />
 
       <div className="dashboard-content">
-        <div className="dashboard-container">
+        <div className="dashboard-container dashboard-container-sm">
 
           <div className="header-flex">
             <h2 className="title">Gestión de Administradores</h2>

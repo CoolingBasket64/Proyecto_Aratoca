@@ -87,7 +87,7 @@ export default function CrearAdmin() {
 
       <div className="dashboard-content">
 
-        <div className="dashboard-container">
+        <div className="dashboard-container dashboard-container-form">
 
           <button
             className="btn-volver-dashboard"

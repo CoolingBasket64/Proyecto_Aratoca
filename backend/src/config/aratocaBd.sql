@@ -108,6 +108,8 @@ VALUES ('Centro', 'Sector B', 'Calle 11 #5-25', 6.7002, -73.0176);
 select * from personas_discapacidad;
 select * from ubicaciones;
 
+update ubicaciones set cod_sector= "2C" where id_ubicacion = 5;
+
 INSERT INTO personas_discapacidad
 (codigo,cod_tipo_doc,documento,primer_apellido,segundo_apellido,primer_nombre,segundo_nombre,
 nombre_completo,fecha_nacimiento,edad,sexo,rlcpd,celular,tiene_cuidador,id_ubicacion)
@@ -122,6 +124,8 @@ INSERT INTO ubicaciones (zona, sector, direccion, latitud, longitud)
 VALUES ('Centro', 'Sector B', 'Calle 11 #5-25', 6.7002, -73.0176);
 
 SELECT * FROM personas_discapacidad;
+
+update usuarios set password = '$2b$10$VKKVrqX.YQ3T5VKnPFoDLumZ5GzASWjo1yeHcCt84zUt5Mc.Eo8lO' where id_usuario = 1;
 
 SELECT p.id_persona, p.nombre_completo, p.edad, p.sexo, p.discapacidad,u.sector, u.latitud, u.longitud
 FROM personas_discapacidad p

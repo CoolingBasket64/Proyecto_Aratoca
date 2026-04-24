@@ -1,6 +1,7 @@
 .dashboard-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #f4f6f9;
 }
 
@@ -8,7 +9,9 @@
 
 .sidebar {
   width: 15.625rem;
-  /* 250px */
+  height: 100%;
+  flex-shrink: 0;
+  overflow-y: auto;
   background: #1f2a40;
   color: white;
   padding: 1.25rem;
@@ -36,8 +39,7 @@
 .dashboard-content {
   flex: 1;
   padding: 2.5rem;
-  display: flex;
-  justify-content: center;
+  overflow-y: auto;
 }
 
 /* CONTENEDOR */
@@ -47,13 +49,30 @@
   padding: 1.875rem;
   border-radius: 0.625rem;
   width: 100%;
-  max-width: 56.25rem;
-  /* 900px */
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .dashboard-container h2 {
   text-align: center;
   margin-bottom: 1.25rem;
+}
+
+.dashboard-container-sm {
+  max-width: 50rem;
+  margin: 0 auto;
+}
+
+.dashboard-container-form {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.td-truncate {
+  max-width: 160px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* GRID FORMULARIO */
@@ -199,6 +218,12 @@
   background: #1f4fbf;
 }
 
+.dashboard-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  width: calc(50% - 0.625rem);
+  justify-self: center;
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -230,8 +255,9 @@
 }
 
 .tabla-container {
-  max-height: 400px;
+  max-height: calc(100vh - 230px);
   overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -248,11 +274,15 @@
   background: #1f2937;
   color: white;
   padding: 10px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .tabla td {
   padding: 10px;
   border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .tabla tr:hover {
@@ -261,7 +291,10 @@
 
 .acciones {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .btn {
@@ -406,6 +439,51 @@
 /* ICONO */
 .logout-btn .icon {
   font-size: 16px;
+}
+
+/* REPORTES */
+.filtros-reporte {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filtros-reporte .filtro {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.reporte-conteo {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.btn-reporte {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-reporte:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+}
+
+.btn-reporte:active {
+  transform: scale(0.97);
 }
 
 .logout-btn {

@@ -122,7 +122,7 @@ export default function EditarDiscapacitado() {
                   <tr key={p.id_persona}>
                     <td>{p.codigo}</td>
                     <td>{p.documento}</td>
-                    <td>{p.nombre_completo}</td>
+                    <td className="td-truncate" title={p.nombre_completo}>{p.nombre_completo}</td>
                     <td>{p.edad}</td>
                     <td>{p.discapacidad}</td>
 
@@ -133,12 +133,14 @@ export default function EditarDiscapacitado() {
                     </td>
 
                     <td className="acciones">
+                    
                       <button
                         className="btn editar"
                         onClick={() => navigate(`/editar/${p.id_persona}`, { state: { from: "gestionar" } })}
                       >
                         Editar
                       </button>
+                      
 
                       <button
                         className={`btn ${p.activo ? "inactivar" : "activar"}`}
@@ -146,6 +148,7 @@ export default function EditarDiscapacitado() {
                       >
                         {p.activo ? "Inactivar" : "Activar"}
                       </button>
+                    
                     </td>
                   </tr>
                 ))}

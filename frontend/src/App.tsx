@@ -8,6 +8,7 @@ import PersonaFormulario from "./pages/personas/personaFormulario";
 import GestionarDiscapacitado from "./pages/personas/gestionarDiscapacitado";
 import CrearAdmin from "./pages/usuarios/crearAdmin";
 import GestionarAdmin from "./pages/usuarios/gestionarAdmin";
+import Reportes from "./pages/reportes";
 
 import "./App.css";
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/crear-admin" element={<ProtectedRoute> <CrearAdmin /> </ProtectedRoute>} />
         <Route path="/gestionar-admin" element={<ProtectedRoute> <GestionarAdmin /> </ProtectedRoute>} />
         <Route path="/crear-admin/:id" element={<ProtectedRoute> <CrearAdmin /> </ProtectedRoute>} />
+        <Route path="/reportes" element={<ProtectedRoute> <Reportes /> </ProtectedRoute>} />
 
       </Routes>
     </BrowserRouter>

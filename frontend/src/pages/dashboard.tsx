@@ -34,6 +34,10 @@ export default function Dashboard() {
               Gestionar Usuarios
             </Link>
 
+            <Link to="/reportes" className="dashboard-btn">
+              Generar Reportes
+            </Link>
+
           </div>
 
         </div>
