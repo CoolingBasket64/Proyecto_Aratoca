@@ -1,11 +1,11 @@
 // Servicio que maneja todas las peticiones HTTP relacionadas con usuarios administradores
 
-const API_URL = "http://localhost:7800/api/usuarios";
+import { API } from "../config/api";
 
 // Autentica al usuario con email y contrasena
 export const login = async (email: string, password: string) => {
 
-  const response = await fetch(`${API_URL}/login`, {
+  const response = await fetch(`${API.usuarios}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const login = async (email: string, password: string) => {
 
 // Crea un nuevo administrador. "any" permite cualquier tipo de dato (evitar en lo posible)
 export const crearAdmin = async (data: any) => {
-  const response = await fetch(API_URL, {
+  const response = await fetch(API.personas, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -47,7 +47,7 @@ export const crearAdmin = async (data: any) => {
 
 // Retorna la lista de todos los administradores
 export const obtenerAdmins = async () => {
-  const response = await fetch(API_URL);
+  const response = await fetch(API.personas);
 
   if (!response.ok) throw new Error("Error obteniendo admins");
 
@@ -56,7 +56,7 @@ export const obtenerAdmins = async () => {
 
 // Activa o inactiva un administrador segun el valor de estado (1=activo, 0=inactivo)
 export const cambiarEstadoAdmin = async (id: number, estado: number) => {
-  const response = await fetch(`${API_URL}/${id}/estado`, {
+  const response = await fetch(`${API.personas}/${id}/estado`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json"
@@ -71,7 +71,7 @@ export const cambiarEstadoAdmin = async (id: number, estado: number) => {
 
 // Obtiene los datos de un administrador especifico por su ID
 export const obtenerAdminPorId = async (id: number) => {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await fetch(`${API.personas}/${id}`);
 
   if (!response.ok) throw new Error("Error obteniendo admin");
 
@@ -80,7 +80,7 @@ export const obtenerAdminPorId = async (id: number) => {
 
 // Edita el nombre, email y opcionalmente la contrasena de un administrador
 export const editarAdmin = async (id: number, data: any) => {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await fetch(`${API.personas}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
