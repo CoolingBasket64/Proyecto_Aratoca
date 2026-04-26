@@ -33,32 +33,44 @@ const obtenerPersonasDB = () => {
       SELECT
         p.id_persona,
         p.codigo,
+        p.cod_tipo_doc,
+        t.descripcion_min,
         p.documento,
+        p.primer_nombre,
+        p.segundo_nombre,
+        p.primer_apellido,
+        p.segundo_apellido,
         p.nombre_completo,
+        p.fecha_nacimiento,
         p.edad,
         p.sexo,
         p.discapacidad,
+        p.celular,
         p.rlcpd,
         p.tiene_cuidador,
         p.activo,
-        p.cod_tipo_doc,
         u.zona,
         u.vereda,
         u.cod_sector,
         u.sector,
-        -- LEFT JOIN con cuidadores: si la persona tiene cuidador trae sus datos,
-        -- si no tiene cuidador esos campos llegan como NULL (no falla la consulta)
-        c.nombre_completo AS cuidador_nombre,
-        c.documento       AS cuidador_documento,
-        c.parentesco      AS cuidador_parentesco,
-        c.celular         AS cuidador_celular,
-        c.sexo            AS cuidador_sexo,
-        c.edad            AS cuidador_edad
+        c.cod_tipo_doc        AS cuidador_cod_tipo_doc,
+        tc.descripcion_min    AS cuidador_descripcion_min,
+        c.primer_nombre       AS cuidador_primer_nombre,
+        c.segundo_nombre      AS cuidador_segundo_nombre,
+        c.primer_apellido     AS cuidador_primer_apellido,
+        c.segundo_apellido    AS cuidador_segundo_apellido,
+        c.nombre_completo     AS cuidador_nombre,
+        c.documento           AS cuidador_documento,
+        c.fecha_nacimiento    AS cuidador_fecha_nacimiento,
+        c.parentesco          AS cuidador_parentesco,
+        c.celular             AS cuidador_celular,
+        c.sexo                AS cuidador_sexo,
+        c.edad                AS cuidador_edad
       FROM personas_discapacidad p
-      -- JOIN normal: solo trae personas que tengan ubicacion registrada
-      JOIN ubicaciones u ON p.id_ubicacion = u.id_ubicacion
-      -- LEFT JOIN: trae todas las personas aunque no tengan cuidador
-      LEFT JOIN cuidadores c ON c.id_persona = p.id_persona;
+      JOIN ubicaciones u  ON u.id_ubicacion  = p.id_ubicacion
+      LEFT JOIN ttipo_doc t  ON t.cod_tipo_doc  = p.cod_tipo_doc
+      LEFT JOIN cuidadores c ON c.id_persona    = p.id_persona
+      LEFT JOIN ttipo_doc tc ON tc.cod_tipo_doc = c.cod_tipo_doc;
     `;
 
     db.query(sql, (err, result) => {

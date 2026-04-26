@@ -22,6 +22,7 @@ export interface Cuidador {
 export interface Persona {
   id_persona:       number;
   codigo:           string;  // Codigo unico autogenerado: iniciales + ultimos 4 del documento (ej: JCPG3456)
+  descripcion_min?: string;
   documento:        string;
   primer_nombre:    string;
   segundo_nombre:   string;
@@ -47,10 +48,17 @@ export interface Persona {
 
   // Estos campos existen cuando los datos del cuidador vienen "planos" en el listado general.
   // En obtenerPersonas() el cuidador no viene anidado sino como columnas adicionales en la misma fila.
-  cuidador_nombre?:     string;
-  cuidador_documento?:  string;
-  cuidador_parentesco?: string;
-  cuidador_celular?:    string;
-  cuidador_sexo?:       string;
-  cuidador_edad?:       number;
+  cuidador_cod_tipo_doc?:     string;
+  cuidador_descripcion_min?:  string;
+  cuidador_primer_nombre?:    string;
+  cuidador_segundo_nombre?:   string;
+  cuidador_primer_apellido?:  string;
+  cuidador_segundo_apellido?: string;
+  cuidador_nombre?:           string;
+  cuidador_documento?:        string;
+  cuidador_fecha_nacimiento?: string;
+  cuidador_parentesco?:       string;
+  cuidador_celular?:          string;
+  cuidador_sexo?:             string;
+  cuidador_edad?:             number;
 }

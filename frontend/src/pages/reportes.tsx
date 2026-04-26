@@ -8,6 +8,15 @@ import { obtenerPersonas } from "../services/personService";
 import type { Persona } from "../types/person";
 import "../styles/dashboard.css";
 
+const fmt = (fecha?: string): string => {
+  if (!fecha) return "";
+  const d = new Date(fecha);
+  if (isNaN(d.getTime())) return "";
+  const dia  = String(d.getUTCDate()).padStart(2, "0");
+  const mes  = String(d.getUTCMonth() + 1).padStart(2, "0");
+  return `${dia}/${mes}/${d.getUTCFullYear()}`;
+};
+
 export default function Reportes() {
   // Lista completa de personas del backend
   const [personas, setPersonas] = useState<Persona[]>([]);
@@ -62,24 +71,37 @@ export default function Reportes() {
     // Define las columnas con su titulo, clave de datos y ancho
     // La clave (key) debe coincidir con las propiedades del objeto que se agrega en addRow
     hoja.columns = [
-      { header: "Codigo",           key: "codigo",              width: 14 },
-      { header: "Documento",        key: "documento",           width: 16 },
-      { header: "Nombre Completo",  key: "nombre_completo",     width: 32 },
-      { header: "Edad",             key: "edad",                width: 8  },
-      { header: "Sexo",             key: "sexo",                width: 12 },
-      { header: "Discapacidad",     key: "discapacidad",        width: 16 },
-      { header: "Zona",             key: "zona",                width: 12 },
-      { header: "Vereda",           key: "vereda",              width: 18 },
-      { header: "Sector",           key: "sector",              width: 18 },
-      { header: "RLCPD",            key: "rlcpd",               width: 10 },
-      { header: "Estado",           key: "estado",              width: 12 },
-      { header: "Cuidador",         key: "cuidador",            width: 12 },
-      { header: "Nombre Cuidador",  key: "cuidador_nombre",     width: 32 },
-      { header: "Doc. Cuidador",    key: "cuidador_documento",  width: 16 },
-      { header: "Parentesco",       key: "cuidador_parentesco", width: 16 },
-      { header: "Celular Cuidador", key: "cuidador_celular",    width: 18 },
-      { header: "Sexo Cuidador",    key: "cuidador_sexo",       width: 14 },
-      { header: "Edad Cuidador",    key: "cuidador_edad",       width: 14 },
+      { header: "CODIGO",                     key: "codigo",                    width: 14 },
+      { header: "TIPO DOCUMENTO",             key: "descripcion_min",           width: 18 },
+      { header: "DOCUMENTO",                  key: "documento",                 width: 16 },
+      { header: "PRIMER NOMBRE",              key: "primer_nombre",             width: 18 },
+      { header: "SEGUNDO NOMBRE",             key: "segundo_nombre",            width: 18 },
+      { header: "PRIMER APELLIDO",            key: "primer_apellido",           width: 18 },
+      { header: "SEGUNDO APELLIDO",           key: "segundo_apellido",          width: 18 },
+      { header: "NOMBRE COMPLETO",            key: "nombre_completo",           width: 36 },
+      { header: "FECHA NACIMIENTO",           key: "fecha_nacimiento",          width: 18 },
+      { header: "EDAD",                       key: "edad",                      width: 8  },
+      { header: "SEXO",                       key: "sexo",                      width: 14 },
+      { header: "DISCAPACIDAD",               key: "discapacidad",              width: 16 },
+      { header: "TELEFONO",                   key: "celular",                   width: 16 },
+      { header: "ZONA",                       key: "zona",                      width: 12 },
+      { header: "VEREDA",                     key: "vereda",                    width: 18 },
+      { header: "SECTOR",                     key: "sector",                    width: 18 },
+      { header: "RLCPD",                      key: "rlcpd",                     width: 10 },
+      { header: "ESTADO",                     key: "estado",                    width: 12 },
+      { header: "CUIDADOR",                   key: "cuidador",                  width: 12 },
+      { header: "TIPO DOC CUIDADOR",          key: "cuidador_descripcion_min",  width: 18 },
+      { header: "PRIMER NOMBRE CUIDADOR",     key: "cuidador_primer_nombre",    width: 22 },
+      { header: "SEGUNDO NOMBRE CUIDADOR",    key: "cuidador_segundo_nombre",   width: 22 },
+      { header: "PRIMER APELLIDO CUIDADOR",   key: "cuidador_primer_apellido",  width: 22 },
+      { header: "SEGUNDO APELLIDO CUIDADOR",  key: "cuidador_segundo_apellido", width: 22 },
+      { header: "NOMBRE CUIDADOR",            key: "cuidador_nombre",           width: 36 },
+      { header: "DOCUMENTO CUIDADOR",         key: "cuidador_documento",        width: 16 },
+      { header: "FECHA NAC CUIDADOR",         key: "cuidador_fecha_nacimiento", width: 18 },
+      { header: "PARENTESCO",                 key: "cuidador_parentesco",       width: 16 },
+      { header: "CELULAR CUIDADOR",           key: "cuidador_celular",          width: 18 },
+      { header: "SEXO CUIDADOR",              key: "cuidador_sexo",             width: 14 },
+      { header: "EDAD CUIDADOR",              key: "cuidador_edad",             width: 14 },
     ];
 
     // Aplica estilos a la fila de encabezados (fila 1)
@@ -105,30 +127,43 @@ export default function Reportes() {
       const esPar = i % 2 === 0;
       const fondoFila = esPar ? "FFFFFFFF" : "FFF9FAFB";
 
-      const estado   = p.activo === 1 ? "Activo" : "Inactivo";
-      const cuidador = p.tiene_cuidador ? "Si" : "No";
-      const rlcpd    = p.rlcpd === "SÍ" ? "Si" : "No";
+      const estado   = p.activo === 1 ? "ACTIVO" : "INACTIVO";
+      const cuidador = p.tiene_cuidador ? "SI" : "NO";
+      const rlcpd    = p.rlcpd === "SÍ" ? "SI" : "NO";
 
       // addRow agrega una fila usando las claves definidas en hoja.columns
       const fila = hoja.addRow({
-        codigo:               p.codigo,
-        documento:            p.documento,
-        nombre_completo:      p.nombre_completo,
-        edad:                 p.edad,
-        sexo:                 p.sexo === "M" ? "Masculino" : "Femenino",
-        discapacidad:         p.discapacidad,
-        zona:                 p.zona ?? "",
-        vereda:               p.vereda ?? "",
-        sector:               p.sector,
+        codigo:                    (p.codigo               ?? "").toUpperCase(),
+        descripcion_min:           (p.descripcion_min      ?? "").toUpperCase(),
+        documento:                 (p.documento            ?? "").toUpperCase(),
+        primer_nombre:             (p.primer_nombre        ?? "").toUpperCase(),
+        segundo_nombre:            (p.segundo_nombre       ?? "").toUpperCase(),
+        primer_apellido:           (p.primer_apellido      ?? "").toUpperCase(),
+        segundo_apellido:          (p.segundo_apellido     ?? "").toUpperCase(),
+        nombre_completo:           (p.nombre_completo      ?? "").toUpperCase(),
+        fecha_nacimiento:          fmt(p.fecha_nacimiento),
+        edad:                      p.edad,
+        sexo:                      p.sexo === "M" ? "MASCULINO" : "FEMENINO",
+        discapacidad:              (p.discapacidad         ?? "").toUpperCase(),
+        celular:                   (p.celular              ?? "").toUpperCase(),
+        zona:                      (p.zona                 ?? "").toUpperCase(),
+        vereda:                    (p.vereda               ?? "").toUpperCase(),
+        sector:                    (p.sector               ?? "").toUpperCase(),
         rlcpd,
         estado,
         cuidador,
-        cuidador_nombre:      p.cuidador_nombre     ?? "",
-        cuidador_documento:   p.cuidador_documento  ?? "",
-        cuidador_parentesco:  p.cuidador_parentesco ?? "",
-        cuidador_celular:     p.cuidador_celular    ?? "",
-        cuidador_sexo:        p.cuidador_sexo === "M" ? "Masculino" : p.cuidador_sexo === "F" ? "Femenino" : "",
-        cuidador_edad:        p.cuidador_edad       ?? "",
+        cuidador_descripcion_min:  (p.cuidador_descripcion_min  ?? "").toUpperCase(),
+        cuidador_primer_nombre:    (p.cuidador_primer_nombre    ?? "").toUpperCase(),
+        cuidador_segundo_nombre:   (p.cuidador_segundo_nombre   ?? "").toUpperCase(),
+        cuidador_primer_apellido:  (p.cuidador_primer_apellido  ?? "").toUpperCase(),
+        cuidador_segundo_apellido: (p.cuidador_segundo_apellido ?? "").toUpperCase(),
+        cuidador_nombre:           (p.cuidador_nombre           ?? "").toUpperCase(),
+        cuidador_documento:        (p.cuidador_documento        ?? "").toUpperCase(),
+        cuidador_fecha_nacimiento: fmt(p.cuidador_fecha_nacimiento),
+        cuidador_parentesco:       (p.cuidador_parentesco       ?? "").toUpperCase(),
+        cuidador_celular:          (p.cuidador_celular          ?? "").toUpperCase(),
+        cuidador_sexo:             p.cuidador_sexo === "M" ? "MASCULINO" : p.cuidador_sexo === "F" ? "FEMENINO" : "",
+        cuidador_edad:             p.cuidador_edad ?? "",
       });
 
       // Aplica estilos a cada celda de la fila

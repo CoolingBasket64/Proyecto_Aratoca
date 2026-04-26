@@ -16,6 +16,8 @@ export default function Home() {
   const [nombreSector, setNombreSector] = useState<string | null>(null);
   // Nombre de la vereda del sector seleccionado
   const [nombreVereda, setNombreVereda] = useState<string | null>(null);
+  // Barrio seleccionado en el filtro (solo aplica en zona Urbana)
+  const [filtroBarrio, setFiltroBarrio] = useState<string>("");
 
   // Garantiza que personas siempre sea un array, aunque el backend devuelva algo inesperado
   const lista = Array.isArray(personas) ? personas : [];
@@ -45,17 +47,34 @@ export default function Home() {
     );
   });
 
+  // true si el sector seleccionado pertenece a zona Urbana
+  const esZonaUrbana = sectorSeleccionado
+    ? lista.find(p => p.cod_sector === sectorSeleccionado)?.zona === "URBANO"
+    : false;
+
+  // Lista unica de barrios disponibles en el sector urbano seleccionado
+  const barriosDisponibles = esZonaUrbana && sectorSeleccionado
+    ? [...new Set(lista
+        .filter(p => p.cod_sector === sectorSeleccionado && p.sector)
+        .map(p => p.sector as string)
+      )].sort()
+    : [];
+
   // Personas que se muestran en el panel lateral:
   // deben estar activas, cumplir el filtro de discapacidad Y pertenecer al sector seleccionado
+  // En zona urbana, ademas aplica el filtro de barrio si esta seleccionado
   const personasPanel = lista.filter((p) => {
     if (p.activo !== 1) return false;
-    if (!sectorSeleccionado) return false; // Si no hay sector seleccionado, no muestra nada
+    if (!sectorSeleccionado) return false;
 
     const cumpleDiscapacidad =
       filtroDiscapacidad === "" ||
       p.discapacidad?.toLowerCase() === filtroDiscapacidad.toLowerCase();
 
-    return cumpleDiscapacidad && p.cod_sector === sectorSeleccionado;
+    const cumpleBarrio =
+      !esZonaUrbana || filtroBarrio === "" || p.sector === filtroBarrio;
+
+    return cumpleDiscapacidad && cumpleBarrio && p.cod_sector === sectorSeleccionado;
   });
 
   // Total de personas activas (con el filtro de discapacidad aplicado) para el contador del encabezado
@@ -85,7 +104,7 @@ export default function Home() {
             onSelectPersona={() => {}}
             // onSelectSector: cuando el usuario hace clic en un sector del mapa,
             // guarda el codigo del sector para filtrar las personas del panel
-            onSelectSector={setSectorSeleccionado}
+            onSelectSector={(cod) => { setSectorSeleccionado(cod); setFiltroBarrio(""); }}
             onSelectNombreSector={setNombreSector}
             onSelectVereda={setNombreVereda}
           />
@@ -98,7 +117,7 @@ export default function Home() {
               o el total general si no hay ninguno seleccionado */}
           <h2>Personas: {sectorSeleccionado ? personasPanel.length : totalPersonas}</h2>
 
-          {nombreVereda && (
+          {nombreVereda && lista.find(p => p.cod_sector === sectorSeleccionado)?.zona !== "URBANO" && (
             <p><strong>Vereda:</strong> {nombreVereda}</p>
           )}
           {nombreSector && (
@@ -125,7 +144,25 @@ export default function Home() {
             </select>
           </div>
 
-          <hr />
+          {/* Filtro de barrio: solo aparece cuando el sector seleccionado es Urbano */}
+          {esZonaUrbana && barriosDisponibles.length > 0 && (
+            <>
+              <div className="filtro-discapacidad">
+                <h3>Filtrar por barrio</h3>
+                <select
+                  className="filtro"
+                  value={filtroBarrio}
+                  onChange={(e) => setFiltroBarrio(e.target.value)}
+                >
+                  <option value="">Todos los barrios</option>
+                  {barriosDisponibles.map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+              </div>
+              <hr />
+            </>
+          )}
 
           {/* Lista de personas: muestra mensaje si no hay sector seleccionado,
               muestra las personas si hay sector, o avisa si no hay personas en ese sector */}

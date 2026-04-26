@@ -19,11 +19,11 @@ export default function Dashboard() {
           <div className="dashboard-buttons">
 
             <Link to="/crear-discapacitado" className="dashboard-btn">
-              Crear Discapacitado
+              Crear PCD
             </Link>
 
             <Link to="/gestionar-discapacitado" className="dashboard-btn">
-              Gestionar Discapacitado
+              Gestionar PCD
             </Link>
 
             <Link to="/crear-admin" className="dashboard-btn">

@@ -35,11 +35,11 @@ export default function Sidebar() {
         </Link>
 
         <Link to="/crear-discapacitado" className="sidebar-link">
-          ➕ Crear Discapacitado
+          ➕ Crear PCD
         </Link>
 
         <Link to="/gestionar-discapacitado" className="sidebar-link">
-          ⚙️ Gestionar Discapacitado
+          ⚙️ Gestionar PCD
         </Link>
 
         <Link to="/crear-admin" className="sidebar-link">
