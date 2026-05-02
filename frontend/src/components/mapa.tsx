@@ -78,7 +78,7 @@ export default function Mapa({
     });
   };
 
-  // Carga los archivos GeoJSON al montar el componente.
+  // Carga los archivos GeoJSON al montar el componente
   // Estos archivos definen las formas geograficas del municipio y sus sectores.
   // Se hace con fetch porque son archivos estaticos en la carpeta public del frontend.
   useEffect(() => {
@@ -105,46 +105,31 @@ export default function Mapa({
   if (!bounds) return null;
 
   return (
-    // MapContainer es el contenedor principal del mapa de Leaflet
-    // bounds define el area inicial visible y maxBounds impide salirse de esa area
     <MapContainer
       bounds={bounds}
       maxBounds={bounds}
-      maxBoundsViscosity={1.0}  // 1.0 = el usuario no puede salir de los limites
+      maxBoundsViscosity={1.0}
       className="leaflet-container"
     >
-      {/* TileLayer es la capa base del mapa (las "losetas" de fondo de OpenStreetMap) */}
       <TileLayer
         attribution="(c) OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* Capa con el limite exterior del municipio (solo el borde, sin relleno) */}
       {aratoca && (
-        <GeoJSON
-          data={aratoca}
-          style={{ weight: 2, fillOpacity: 0 }}
-        />
+        <GeoJSON data={aratoca} style={{ weight: 2, fillOpacity: 0 }} />
       )}
 
-      {/* Capa con los sectores internos, cada uno con su color y eventos de clic */}
       {sectores && (
         <GeoJSON
           data={sectores}
           style={estiloSectores}
-          // onEachFeature se ejecuta por cada sector del GeoJSON para agregar
-          // popups y eventos de clic a cada uno
           onEachFeature={(feature, layer) => {
-           
-
-            // Evento de clic en el sector: actualiza el sector seleccionado
-            // y notifica al componente padre con el codigo y nombre del sector
             layer.on({
               click: () => {
                 const codigo = feature.properties.Codigo;
                 const nombre = feature.properties.Sector;
                 const vereda = feature.properties.Vereda;
-
                 setSectorSeleccionado(codigo);
                 onSelectSector(codigo);
                 onSelectNombreSector(nombre);
@@ -155,32 +140,21 @@ export default function Mapa({
         />
       )}
 
-      {/* Marcadores con contadores: uno por sector, posicionado en el centro del sector */}
       {sectores &&
         sectores.features.map((feature: any, index: number) => {
           const codigo = feature.properties.Codigo;
-
-          // Cuenta cuantas personas activas (filtradas) hay en este sector
-          const cantidad = personas.filter(
-            (p) => p.cod_sector === codigo
-          ).length;
-
-          // Calcula el centro geografico del sector para posicionar el marcador
+          const cantidad = personas.filter(p => p.cod_sector === codigo).length;
           const centro = L.geoJSON(feature).getBounds().getCenter();
-
           return (
-            // Marker coloca un marcador en el mapa en las coordenadas indicadas
             <Marker
               key={index}
               position={[centro.lat, centro.lng]}
               icon={crearIconoContador(cantidad)}
-              // Al hacer clic en el contador tambien selecciona el sector
               eventHandlers={{
                 click: () => {
                   const codigo = feature.properties.Codigo;
                   const nombre = feature.properties.Sector;
                   const vereda = feature.properties.Vereda;
-
                   setSectorSeleccionado(codigo);
                   onSelectSector(codigo);
                   onSelectNombreSector(nombre);
@@ -190,6 +164,35 @@ export default function Mapa({
             />
           );
         })}
+
+      {/* Leyenda de veredas */}
+      <div style={{
+        position: "absolute",
+        top: "10px",
+        left: "50px",
+        zIndex: 1000,
+        background: "white",
+        padding: "10px 14px",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+        fontSize: "13px",
+        fontWeight: 600,
+      }}>
+        <p style={{ marginBottom: "6px", color: "#e74c3c", fontWeight: 700 }}>VEREDAS</p>
+        {Object.entries(coloresVereda).map(([nombre, color]) => (
+          <div key={nombre} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+            <div style={{
+              width: "16px",
+              height: "16px",
+              background: color,
+              borderRadius: "3px",
+              flexShrink: 0,
+            }} />
+            <span>{nombre}</span>
+          </div>
+        ))}
+      </div>
+
     </MapContainer>
   );
 }

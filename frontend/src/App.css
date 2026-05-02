@@ -22,7 +22,8 @@ html, body, #root {
 
 .nav {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
   padding: 15px 25px;
   background: #1e293b;
 }
