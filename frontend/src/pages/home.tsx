@@ -44,6 +44,23 @@ export default function Home() {
     return p.vereda === filtroVereda;
   };
 
+  const esZonaUrbana =
+    filtroVereda === "URBANO" ||
+    (sectorSeleccionado
+      ? lista.find(p => p.cod_sector === sectorSeleccionado)?.zona === "URBANO"
+      : false);
+
+  const barriosDisponibles = esZonaUrbana
+    ? [...new Set(lista
+        .filter(p => p.zona === "URBANO" && p.barrio && (!sectorSeleccionado || p.cod_sector === sectorSeleccionado))
+        .map(p => p.barrio as string)
+      )].sort()
+    : [];
+
+  console.log("🔍 DEBUG lista[0]:", lista[0]);
+  console.log("🔍 DEBUG urbanos:", lista.filter(p => p.zona === "URBANO").map(p => ({ zona: p.zona, barrio: p.barrio })));
+  console.log("🔍 DEBUG barriosDisponibles:", barriosDisponibles);
+
   const personasFiltradas = lista.filter((p) => {
     if (p.activo !== 1) return false;
 
@@ -51,19 +68,10 @@ export default function Home() {
       filtroDiscapacidad === "" ||
       p.discapacidad?.toLowerCase() === filtroDiscapacidad.toLowerCase();
 
-    return cumpleDiscapacidad && cumpleVeredaFn(p);
+    const cumpleBarrio = !esZonaUrbana || filtroBarrio === "" || p.barrio === filtroBarrio;
+
+    return cumpleDiscapacidad && cumpleVeredaFn(p) && cumpleBarrio;
   });
-
-  const esZonaUrbana = sectorSeleccionado
-    ? lista.find(p => p.cod_sector === sectorSeleccionado)?.zona === "URBANO"
-    : false;
-
-  const barriosDisponibles = esZonaUrbana && sectorSeleccionado
-    ? [...new Set(lista
-      .filter(p => p.cod_sector === sectorSeleccionado && p.sector)
-      .map(p => p.sector as string)
-    )].sort()
-    : [];
 
   const personasPanel = lista.filter((p) => {
     if (p.activo !== 1) return false;
@@ -74,7 +82,7 @@ export default function Home() {
       p.discapacidad?.toLowerCase() === filtroDiscapacidad.toLowerCase();
 
     const cumpleBarrio =
-      !esZonaUrbana || filtroBarrio === "" || p.sector === filtroBarrio;
+      !esZonaUrbana || filtroBarrio === "" || p.barrio === filtroBarrio;
 
     return cumpleDiscapacidad && cumpleBarrio && cumpleVeredaFn(p) && p.cod_sector === sectorSeleccionado;
   });
@@ -87,13 +95,7 @@ export default function Home() {
     return cumpleDiscapacidad && cumpleVeredaFn(p);
   }).length;
 
-  const resetearMapa = () => {
-    setSectorSeleccionado(null);
-    setNombreSector(null);
-    setNombreVereda(null);
-    setFiltroBarrio("");
-    setMapaKey(k => k + 1);
-  };
+ 
 
   return (
     <div className="app">
@@ -102,13 +104,18 @@ export default function Home() {
         <Link to="/login">
           <button className="login-btn">🔒 Iniciar sesion</button>
         </Link>
-        <img
-          src="/logo.png"
-          alt="Logo PPDIS Aratoca"
-          onClick={resetearMapa}
-          title="Volver al inicio"
-          style={{ height: "45px", cursor: "pointer" }}
-        />
+        <div
+          style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
+          onClick={() => { window.location.href = "/"; }}
+          title="Actualizar página"
+        >
+          <span style={{ fontSize: "13px", color: "#555", userSelect: "none" }}>🔄 Actualizar página</span>
+          <img
+            src="/logo.png"
+            alt="Logo PPDIS Aratoca"
+            style={{ height: "52px" }}
+          />
+        </div>
       </header>
 
       <div className="app-container">
@@ -156,12 +163,13 @@ export default function Home() {
 
           {/* Filtro de vereda */}
           <div className="filtro-discapacidad">
-            <h3>Filtrar por vereda</h3>
+            <h3>Filtrar por zona</h3>
             <select className="filtro"
               value={filtroVereda}
               onChange={(e) => {
                 setFiltroVereda(e.target.value);
                 setSectorSeleccionado(null);
+                setFiltroBarrio("");
                 setMapaKey(k => k + 1);
               }}
             >
@@ -173,7 +181,7 @@ export default function Home() {
           </div>
 
           {/* Filtro de barrio: solo en zona urbana */}
-          {esZonaUrbana && barriosDisponibles.length > 0 && (
+          {esZonaUrbana && (
             <>
               <div className="filtro-discapacidad">
                 <h3>Filtrar por barrio</h3>

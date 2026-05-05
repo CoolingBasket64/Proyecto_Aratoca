@@ -178,7 +178,7 @@ export default function Mapa({
         fontSize: "13px",
         fontWeight: 600,
       }}>
-        <p style={{ marginBottom: "6px", color: "#e74c3c", fontWeight: 700 }}>VEREDAS</p>
+        <p style={{ marginBottom: "6px", color: "#e74c3c", fontWeight: 700 }}></p>
         {Object.entries(coloresVereda).map(([nombre, color]) => (
           <div key={nombre} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
             <div style={{

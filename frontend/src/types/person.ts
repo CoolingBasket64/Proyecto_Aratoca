@@ -40,6 +40,7 @@ export interface Persona {
   vereda?:          string;  // Solo aplica para zona Rural
   cod_sector:       string;  // Codigo del sector geografico, se usa para cruzar con el GeoJSON del mapa
   sector:           string;  // Nombre del sector
+  barrio?:          string;  // Barrio (solo zona URBANA)
   latitud:          number;
   longitud:         number;
   tiene_cuidador:   number | boolean; // Llega como 1/0 desde MySQL, o true/false desde el formulario

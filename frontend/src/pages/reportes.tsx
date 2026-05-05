@@ -88,7 +88,6 @@ export default function Reportes() {
       { header: "ZONA",                       key: "zona",                      width: 12 },
       { header: "VEREDA",                     key: "vereda",                    width: 18 },
       { header: "SECTOR",                     key: "sector",                    width: 18 },
-      { header: "ESTADO",                     key: "estado",                    width: 12 },
       { header: "CUIDADOR",                   key: "cuidador",                  width: 12 },
       { header: "TIPO DOC CUIDADOR",          key: "cuidador_descripcion_min",  width: 25 },
       { header: "PRIMER NOMBRE CUIDADOR",     key: "cuidador_primer_nombre",    width: 29 },
@@ -102,6 +101,7 @@ export default function Reportes() {
       { header: "PARENTESCO",                 key: "cuidador_parentesco",       width: 20 },
       { header: "CELULAR CUIDADOR",           key: "cuidador_celular",          width: 25 },
       { header: "SEXO CUIDADOR",              key: "cuidador_sexo",             width: 20 },
+      { header: "ESTADO",                     key: "estado",                    width: 12 },
       
     ];
 
@@ -257,9 +257,8 @@ export default function Reportes() {
               onChange={(e) => setFiltroZona(e.target.value)}
             >
               <option value="">Todas las zonas</option>
-              {zonas.map((z) => (
-                <option key={z} value={z}>{z}</option>
-              ))}
+              <option value="URBANO">URBANO</option>
+              <option value="RURAL">RURAL</option>
               
             </select>
           </div>

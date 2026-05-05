@@ -15,7 +15,8 @@ const obtenerPersonasPublicasDB = () => {
         u.zona,
         u.vereda,
         u.cod_sector,
-        u.sector
+        u.sector,
+        u.barrio
       FROM personas_discapacidad p
       JOIN ubicaciones u ON p.id_ubicacion = u.id_ubicacion
     `;
@@ -53,6 +54,7 @@ const obtenerPersonasDB = () => {
         u.vereda,
         u.cod_sector,
         u.sector,
+        u.barrio,
         c.cod_tipo_doc        AS cuidador_cod_tipo_doc,
         tc.descripcion_min    AS cuidador_descripcion_min,
         c.primer_nombre       AS cuidador_primer_nombre,

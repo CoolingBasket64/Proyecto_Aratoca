@@ -308,12 +308,12 @@ export default function CrearDiscapacitado() {
               <label htmlFor="discapacidad">Tipo de Discapacidad</label>
               <select id="discapacidad" name="discapacidad" onChange={handleChange} value={form.discapacidad} >
                 <option value="">Seleccione discapacidad</option>
-                <option value="Fisica">Fisica</option>
-                <option value="Visual">Visual</option>
-                <option value="Sordoceguera">Sordoceguera</option>
-                <option value="Intelectual">Intelectual</option>
-                <option value="Psicosocial-Mental">Psicosocial-Mental</option>
-                <option value="Multiple">Multiple</option>
+                <option value="FÍSICA">Fisica</option>
+                <option value="VISUAL">Visual</option>
+                <option value="AUDITIVA">Auditiva</option>
+                <option value="INTELECTUAL">Intelectual</option>
+                <option value="PSICOSOCIAL">Psicosocial</option>
+                <option value="MÚLTIPLE">Multiple</option>
               </select>
             </div>
             <div>
@@ -327,14 +327,14 @@ export default function CrearDiscapacitado() {
               <label htmlFor="zona">Zona</label>
               <select id="zona" name="zona" value={form.zona || ""} onChange={handleChange} >
                 <option value="">Seleccione zona</option>
-                <option value="Urbana">Urbana</option>
-                <option value="Rural">Rural</option>
+                <option value="URBANO">Urbana</option>
+                <option value="RURAL">Rural</option>
               </select>
             </div>
 
             {/* Los campos de vereda y sector solo aparecen si la zona es Rural
                 El fragmento <> </> agrupa elementos sin agregar un div extra al DOM */}
-            {form.zona === "Rural" && (
+            {form.zona === "RURAL" && (
               <>
                 <div>
                   <label htmlFor="Vereda">Vereda</label>
