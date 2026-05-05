@@ -35,7 +35,6 @@ export default function Reportes() {
   // Extrae la lista unica de sectores para el selector de filtro
   // Set elimina duplicados, spread [...] lo convierte a array, sort() ordena alfabeticamente
   const sectores = [...new Set(personas.map((p) => p.sector).filter(Boolean))].sort();
-  const zonas = [...new Set(personas.map((p) => p.zona).filter(Boolean))].sort();
 
   // Aplica los tres filtros a la lista de personas
   const personasFiltradas = personas.filter((p) => {
