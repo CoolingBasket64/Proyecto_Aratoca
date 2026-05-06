@@ -1,3 +1,9 @@
+/* ── LAYOUT PRINCIPAL ────────────────────────────────────────────────────────
+   dashboard-layout divide la pantalla en dos zonas horizontales:
+   el sidebar a la izquierda y el contenido a la derecha.
+   overflow: hidden evita que el sidebar desborde cuando tiene mas contenido
+   que la altura de la ventana (el propio sidebar tiene overflow-y: auto).        */
+
 .dashboard-layout {
   display: flex;
   height: 100vh;
@@ -5,7 +11,10 @@
   background: #f4f6f9;
 }
 
-/* SIDEBAR */
+/* ── SIDEBAR ─────────────────────────────────────────────────────────────────
+   El sidebar tiene un ancho fijo de 250px (15.625rem) y nunca se encoge
+   dentro del contenedor flex gracias a flex-shrink: 0.
+   overflow-y: auto permite desplazarse si los enlaces no caben en pantalla.     */
 
 .sidebar {
   width: 15.625rem;
@@ -21,6 +30,7 @@
   margin-bottom: 1.875rem;
 }
 
+/* Los enlaces del sidebar son flex para alinear el icono y el texto en la misma fila. */
 .sidebar a {
   display: flex;
   align-items: center;
@@ -34,7 +44,11 @@
   color: #2d6cdf;
 }
 
-/* CONTENIDO */
+/* ── AREA DE CONTENIDO ───────────────────────────────────────────────────────
+   flex: 1 hace que dashboard-content tome todo el espacio horizontal
+   que no ocupa el sidebar.
+   overflow-y: auto permite hacer scroll dentro del contenido sin afectar
+   al sidebar, que permanece fijo en su lugar.                                   */
 
 .dashboard-content {
   flex: 1;
@@ -42,7 +56,10 @@
   overflow-y: auto;
 }
 
-/* CONTENEDOR */
+/* ── TARJETA CONTENEDORA ─────────────────────────────────────────────────────
+   dashboard-container es la tarjeta blanca con borde redondeado que
+   envuelve el contenido de cada pagina del panel admin.
+   max-width: 100% evita que el padding interno desborde el contenedor.          */
 
 .dashboard-container {
   background: white;
@@ -58,16 +75,21 @@
   margin-bottom: 1.25rem;
 }
 
+/* Variante estrecha para paginas como gestionar admins donde la tabla es pequena. */
 .dashboard-container-sm {
   max-width: 50rem;
   margin: 0 auto;
 }
 
+/* Variante para formularios, que necesitan mas ancho que la variante estrecha
+   pero menos que el ancho completo. */
 .dashboard-container-form {
   max-width: 56rem;
   margin: 0 auto;
 }
 
+/* Trunca el texto de una celda de tabla cuando es demasiado largo,
+   mostrando "..." al final. Se usa en columnas de nombre. */
 .td-truncate {
   max-width: 160px;
   overflow: hidden;
@@ -75,7 +97,10 @@
   text-overflow: ellipsis;
 }
 
-/* GRID FORMULARIO */
+/* ── GRILLA DE FORMULARIO ────────────────────────────────────────────────────
+   Los formularios de creacion y edicion usan una grilla de dos columnas
+   para aprovechar el espacio horizontal en pantallas anchas.
+   En movil se colapsa a una sola columna via media query.                       */
 
 .form-grid {
   display: grid;
@@ -83,16 +108,16 @@
   gap: 1.25rem;
 }
 
-/* GRUPO */
-
+/* Cada grupo campo + etiqueta ocupa todo el ancho disponible de su celda. */
 .form-group {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* INPUTS */
-
+/* Todos los inputs de texto y selects dentro de la grilla tienen altura y
+   padding uniformes. box-sizing: border-box incluye el padding en el calculo
+   del ancho, evitando que los inputs desborden su celda.                        */
 .form-grid input:not([type="checkbox"]),
 .form-grid select {
   width: 100%;
@@ -105,39 +130,42 @@
   color: #000;
 }
 
-/* PLACEHOLDER */
-
 .form-grid input::placeholder {
   color: #9ca3af;
 }
 
-/* FULL WIDTH */
-
+/* full-width hace que un campo ocupe las dos columnas de la grilla.
+   Se usa para campos como "Direccion" que necesitan mas espacio.                */
 .full-width {
   grid-column: span 2;
 }
 
-/* TITULOS */
-
+/* form-title es un <h3> que actua como separador de secciones dentro del formulario.
+   Ocupa toda la fila para que el titulo quede en una linea propia.              */
 .form-title {
   grid-column: span 2;
   margin-top: 0.625rem;
 }
 
-/* CHECKBOX */
-
+/* Estilos del checkbox junto a su etiqueta. */
 .checkbox-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+/* Anula el tamanio fijo que se aplica a los otros inputs para que el checkbox
+   mantenga su tamanio nativo del navegador.                                     */
 .checkbox-container input[type="checkbox"] {
   width: auto;
   height: auto;
 }
 
-/* SECCION CUIDADOR */
+/* ── SECCION CUIDADOR ────────────────────────────────────────────────────────
+   Bloque que agrupa todos los campos del cuidador dentro del formulario de persona.
+   Usa su propia grilla de dos columnas y tiene un fondo ligeramente gris
+   para diferenciarse visualmente de los campos de la persona.
+   grid-column: span 2 lo hace ocupar toda la fila de la grilla padre.           */
 
 .cuidador-section {
   grid-column: span 2;
@@ -154,8 +182,9 @@
   grid-column: span 2;
 }
 
-/* BOTONES */
+/* ── BOTONES DE FORMULARIO ───────────────────────────────────────────────────  */
 
+/* Boton principal de envio del formulario. Ocupa toda la fila de la grilla. */
 .btn-guardar {
   grid-column: span 2;
   padding: 0.75rem;
@@ -166,6 +195,7 @@
   cursor: pointer;
 }
 
+/* Boton secundario para volver a la pagina anterior. */
 .btn-volver-dashboard {
   margin-bottom: 1.25rem;
   padding: 0.625rem;
@@ -176,7 +206,8 @@
   cursor: pointer;
 }
 
-/* MENSAJES */
+/* ── MENSAJES DE RETROALIMENTACION ───────────────────────────────────────────
+   Ocupa toda la fila de la grilla para que el mensaje sea claramente visible.  */
 
 .mensaje {
   grid-column: span 2;
@@ -195,7 +226,8 @@
   color: #721c24;
 }
 
-/* DASHBOARD BOTONES */
+/* ── BOTONES DEL DASHBOARD ───────────────────────────────────────────────────
+   Grilla de dos columnas para los accesos directos de la pagina principal.     */
 
 .dashboard-buttons {
   display: grid;
@@ -218,11 +250,19 @@
   background: #1f4fbf;
 }
 
+/* Cuando el ultimo boton es el unico de su fila (cantidad impar de botones),
+   lo centramos dandole la mitad del ancho de la grilla para que no quede
+   estirado ocupando toda la fila solo.                                          */
 .dashboard-btn:last-child:nth-child(odd) {
   grid-column: 1 / -1;
   width: calc(50% - 0.625rem);
   justify-self: center;
 }
+
+/* ── MODAL ───────────────────────────────────────────────────────────────────
+   Capa fija que cubre toda la pantalla con un fondo semitransparente.
+   El primer bloque lo posiciona; el segundo (mas abajo) le da los estilos
+   finales con flex para centrar el contenido.                                   */
 
 .modal {
   position: fixed;
@@ -233,6 +273,7 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* Caja blanca del modal centrada en pantalla. */
 .modal-content {
   background: white;
   padding: 20px;
@@ -241,11 +282,14 @@
   text-align: center;
 }
 
+/* ── BARRA DE BUSQUEDA ───────────────────────────────────────────────────────  */
+
 .title {
   text-align: center;
   margin-bottom: 20px;
 }
 
+/* Campo de busqueda que filtra la tabla en las paginas de gestion. */
 .input-busqueda {
   width: 100%;
   padding: 10px;
@@ -253,6 +297,11 @@
   border-radius: 10px;
   border: 1px solid #ccc;
 }
+
+/* ── TABLA ───────────────────────────────────────────────────────────────────
+   El contenedor limita la altura de la tabla y permite desplazamiento vertical.
+   overflow-x: hidden evita scroll horizontal en escritorio; en movil se
+   sobreescribe a "auto" para que las columnas no se compriman.                  */
 
 .tabla-container {
   max-height: calc(100vh - 230px);
@@ -268,6 +317,8 @@
   background: white;
 }
 
+/* position: sticky mantiene los encabezados visibles al hacer scroll hacia abajo.
+   top: 0 los fija al borde superior del contenedor desplazable.                 */
 .tabla th {
   position: sticky;
   top: 0;
@@ -289,6 +340,8 @@
   background: #f9fafb;
 }
 
+/* Celda de acciones: agrupa los botones de editar e inactivar en fila
+   sin que se partan en varias lineas.                                           */
 .acciones {
   display: flex;
   gap: 10px;
@@ -296,6 +349,8 @@
   justify-content: center;
   white-space: nowrap;
 }
+
+/* ── BOTONES DE ACCION EN TABLA ──────────────────────────────────────────────  */
 
 .btn {
   padding: 6px 10px;
@@ -320,6 +375,9 @@
   color: white;
 }
 
+/* ── BADGES DE ESTADO ────────────────────────────────────────────────────────
+   Pastilla de color que indica si un registro esta activo o inactivo.           */
+
 .badge {
   padding: 4px 8px;
   border-radius: 10px;
@@ -334,6 +392,10 @@
 .inactivo {
   background: #ef4444;
 }
+
+/* ── MODAL (version final con flex para centrar) ─────────────────────────────
+   Sobreescribe el primer bloque .modal para centrar el contenido
+   tanto vertical como horizontalmente usando flexbox.                           */
 
 .modal {
   position: fixed;
@@ -371,6 +433,11 @@
   color: white;
 }
 
+/* ── ALERTAS TEMPORALES ──────────────────────────────────────────────────────
+   Mensaje de exito o error que aparece en la parte superior de la pagina
+   y desaparece despues de unos segundos via setTimeout en el componente.
+   La animacion fadeIn suaviza la aparicion del mensaje.                         */
+
 .alerta {
   margin-bottom: 15px;
   padding: 12px;
@@ -401,6 +468,11 @@
   }
 }
 
+/* ── BOTON CERRAR SESION ─────────────────────────────────────────────────────
+   El primer bloque define el estilo base con gradiente.
+   El segundo bloque (mas abajo) lo sobreescribe con el estilo de borde
+   transparente que se usa actualmente.                                          */
+
 .logout-btn {
   margin-top: auto;
   width: 100%;
@@ -425,23 +497,24 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* HOVER 🔥 */
 .logout-btn:hover {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   transform: translateY(-2px);
 }
 
-/* CLICK */
 .logout-btn:active {
   transform: scale(0.97);
 }
 
-/* ICONO */
 .logout-btn .icon {
   font-size: 16px;
 }
 
-/* REPORTES */
+/* ── SECCION DE REPORTES ─────────────────────────────────────────────────────
+   Contenedor de los selectores de filtro antes de generar el Excel.
+   flex-wrap: wrap permite que los filtros pasen a una segunda fila
+   si el espacio horizontal no alcanza.                                          */
+
 .filtros-reporte {
   display: flex;
   gap: 12px;
@@ -449,6 +522,8 @@
   margin-bottom: 16px;
 }
 
+/* min-width: 180px garantiza que cada filtro tenga un tamanio minimo legible
+   antes de pasar a una nueva fila.                                              */
 .filtros-reporte .filtro {
   flex: 1;
   min-width: 180px;
@@ -458,12 +533,14 @@
   font-size: 14px;
 }
 
+/* Texto que muestra cuantos registros coinciden con los filtros seleccionados. */
 .reporte-conteo {
   font-size: 14px;
   color: #6b7280;
   margin-bottom: 12px;
 }
 
+/* Boton para descargar el archivo Excel generado con ExcelJS. */
 .btn-reporte {
   padding: 10px 24px;
   background: linear-gradient(135deg, #10b981, #059669);
@@ -486,6 +563,8 @@
   transform: scale(0.97);
 }
 
+/* Sobreescribe el estilo de gradiente del primer bloque .logout-btn
+   con un diseno de borde transparente que es mas sobrio.                        */
 .logout-btn {
   background: transparent;
   border: 2px solid #ef4444;
@@ -495,4 +574,156 @@
 .logout-btn:hover {
   background: #ef4444;
   color: white;
+}
+
+/* ── HAMBURGUESA Y CIERRE (ocultos en escritorio) ────────────────────────────
+   Estos tres elementos solo existen en movil.
+   En escritorio se ocultan con display: none para que no interfieran
+   con el layout de sidebar siempre visible.                                     */
+
+.sidebar-hamburger,
+.sidebar-close,
+.sidebar-backdrop {
+  display: none;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────────────
+   A partir de 768px de ancho o menos el layout cambia completamente:
+   el sidebar sale del flujo normal (position: fixed) y se convierte en
+   un panel off-canvas que se abre y cierra con el boton hamburguesa.            */
+
+@media (max-width: 768px) {
+
+  /* Boton hamburguesa fijo en la esquina superior izquierda.
+     position: fixed lo saca del flujo del documento y lo fija sobre el contenido
+     a una posicion constante sin importar el scroll de la pagina.               */
+  .sidebar-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1001;
+    width: 42px;
+    height: 42px;
+    background: #1f2a40;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* Capa semitransparente que cubre el contenido principal mientras el sidebar
+     esta abierto. z-index: 999 la coloca debajo del sidebar (1000) pero encima
+     del contenido normal, bloqueando la interaccion con la pagina hasta que
+     el usuario cierre el menu.                                                  */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 999;
+  }
+
+  /* El sidebar pasa a ser un panel fijo que se desliza desde la izquierda.
+     left: -260px lo esconde completamente fuera de la pantalla.
+     transition: left 0.25s hace que el movimiento sea suave al abrir y cerrar.
+     display: flex + flex-direction: column permite que el boton de cerrar sesion
+     use margin-top: auto para pegarse al fondo del panel.                       */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Clase que se agrega con JavaScript cuando el usuario abre el menu.
+     Mueve el sidebar a left: 0 para que quede completamente visible.            */
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+
+  /* Boton X dentro del sidebar para cerrarlo sin tocar el backdrop.
+     align-self: flex-end lo pega al borde derecho del panel.                   */
+  .sidebar-close {
+    display: flex;
+    align-self: flex-end;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+
+  /* El area de contenido ocupa todo el ancho porque el sidebar esta fuera del
+     flujo normal (position: fixed no ocupa espacio en el flex container).
+     padding-top: 4rem reserva espacio para el boton hamburguesa fijo
+     y evita que el titulo de la pagina quede tapado por el.                     */
+  .dashboard-content {
+    padding: 1rem;
+    padding-top: 4rem;
+  }
+
+  /* Los formularios de dos columnas pasan a una sola columna para que
+     los campos sean legibles en pantallas estrechas.                            */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Estas clases usaban "grid-column: span 2" para ocupar toda la fila en la
+     grilla de dos columnas. Con una sola columna, "span 1" es suficiente.      */
+  .full-width,
+  .form-title,
+  .btn-guardar,
+  .mensaje {
+    grid-column: span 1;
+  }
+
+  /* La seccion del cuidador tambien colapsa a una columna. */
+  .cuidador-section {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+  }
+
+  .cuidador-section h3 {
+    grid-column: span 1;
+  }
+
+  /* Los botones del dashboard pasan a una sola columna para que
+     cada boton tenga suficiente espacio de toque en movil.                      */
+  .dashboard-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  /* Anula el centrado especial del ultimo boton impar: en una sola columna
+     todos los botones deben ocupar el ancho completo.                           */
+  .dashboard-btn:last-child:nth-child(odd) {
+    grid-column: auto;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  /* Habilita el scroll horizontal en la tabla para que el usuario pueda
+     desplazarse y ver todas las columnas sin que el contenido se comprima.     */
+  .tabla-container {
+    overflow-x: auto;
+  }
+
+  /* Ajusta el modal al ancho de la pantalla del dispositivo.
+     max-width: 420px evita que en tablets quede demasiado ancho.
+     margin: 0 lo centra mediante el flex del contenedor .modal.                */
+  .modal-content {
+    width: 90%;
+    max-width: 420px;
+    margin: 0;
+  }
 }

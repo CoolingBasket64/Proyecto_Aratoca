@@ -1,8 +1,22 @@
+/* ── RESET GLOBAL ────────────────────────────────────────────────────────────
+   Elimina margenes y rellenos por defecto de todos los elementos del navegador,
+   que varian entre Chrome, Firefox y Safari.
+   box-sizing: border-box hace que el padding y el borde se incluyan en el
+   calculo del ancho y alto del elemento, evitando desbordamientos inesperados.  */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+/* ── BASE DEL DOCUMENTO ──────────────────────────────────────────────────────
+   height: 100% y width: 100% hacen que el arbol html > body > #root ocupe
+   exactamente el tamanio de la ventana del navegador, sin mas ni menos.
+   overflow: hidden evita la barra de scroll global: cada seccion interna
+   (mapa, panel) maneja su propio scroll de forma independiente.
+   font-size, font-weight y color son valores base que heredan todos los
+   textos del Home a menos que un selector mas especifico los sobreescriba.      */
 
 html, body, #root {
   height: 100%;
@@ -13,12 +27,22 @@ html, body, #root {
   color: #2c3e50;
 }
 
+/* ── CONTENEDOR RAIZ DEL HOME ────────────────────────────────────────────────
+   .app es el elemento mas externo del componente Home.
+   flex-direction: column apila verticalmente la barra de navegacion (.nav)
+   sobre el contenido principal (.app-container).                                */
+
 .app {
   height: 100vh;
   display: flex;
   overflow: hidden;
   flex-direction: column;
 }
+
+/* ── BARRA DE NAVEGACION SUPERIOR ────────────────────────────────────────────
+   Barra del Home con el boton de login y el logo.
+   justify-content: space-between separa el boton a la izquierda y el logo
+   a la derecha usando el espacio disponible entre ambos.                        */
 
 .nav {
   display: flex;
@@ -28,12 +52,16 @@ html, body, #root {
   background: #1e293b;
 }
 
+/* ── FILTROS ─────────────────────────────────────────────────────────────────
+   Contenedor de cada grupo de filtro en el panel lateral del Home.
+   El padding separa verticalmente cada grupo de filtro.                         */
 
-.filtro-discapacidad{
+.filtro-discapacidad {
   padding-top: 10px;
   padding-bottom: 15px;
 }
-/* Título */
+
+/* Titulo del grupo de filtro, por ejemplo "Filtrar por discapacidad". */
 .filtro-discapacidad h1 {
   margin-bottom: 10px;
   font-size: 15px;
@@ -41,7 +69,13 @@ html, body, #root {
   color: #2c3e50;
 }
 
-/* Select */
+/* ── SELECT DE FILTRO ────────────────────────────────────────────────────────
+   Estilos para los <select> del panel lateral del Home.
+   appearance: none elimina la flecha nativa del navegador para reemplazarla
+   con una flecha SVG personalizada mediante background-image.
+   La imagen SVG esta codificada en base64 directamente en el CSS para evitar
+   una peticion HTTP adicional al servidor.                                      */
+
 .filtro {
   width: 100%;
   padding: 10px 14px;
@@ -54,33 +88,32 @@ html, body, #root {
   cursor: pointer;
   transition: all 0.25s ease;
 
-  /* quitar estilo nativo */
   appearance: none;
 
-  /* flecha personalizada */
   background-image: url("data:image/svg+xml;utf8,<svg fill='%232c3e50' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;
 }
 
-/* Hover */
 .filtro:hover {
   border-color: #3498db;
 }
 
-/* Focus */
 .filtro:focus {
   border-color: #2980b9;
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-/* Opcional: animación suave al abrir (visual) */
-
-.personas{
+/* Espaciado entre tarjetas de persona en el panel lateral. */
+.personas {
   padding-top: 3px;
   padding-bottom: 3px;
 }
+
+/* ── BOTON DE LOGIN ──────────────────────────────────────────────────────────
+   Boton en la barra de navegacion superior del Home que lleva al formulario
+   de inicio de sesion.                                                          */
 
 .login-btn {
   padding: 8px 14px;
@@ -91,6 +124,11 @@ html, body, #root {
   cursor: pointer;
 }
 
+/* ── CONTENEDOR PRINCIPAL DEL HOME ──────────────────────────────────────────
+   Divide horizontalmente el area debajo de la barra de navegacion en
+   dos zonas: el mapa (flex: 3) y el panel lateral (flex: 1).
+   overflow: hidden impide que cualquiera de las dos zonas desborde el layout.  */
+
 .app-container {
   flex: 1;
   display: flex;
@@ -99,14 +137,19 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* mapa */
+/* ── MAPA ────────────────────────────────────────────────────────────────────
+   flex: 3 le asigna tres cuartas partes del espacio horizontal disponible,
+   dejando una cuarta parte para el panel lateral.                               */
 
 .mapa-container {
   flex: 3;
   height: 100%;
 }
 
-/* panel */
+/* ── PANEL LATERAL ───────────────────────────────────────────────────────────
+   flex: 1 ocupa la cuarta parte restante del espacio horizontal.
+   overflow-y: auto habilita el scroll vertical cuando hay muchas tarjetas
+   de personas, sin afectar el tamanio del mapa.                                */
 
 .panel-container {
   flex: 1;
@@ -116,7 +159,9 @@ html, body, #root {
   overflow-y: auto;
 }
 
-/* mapa leaflet */
+/* ── MAPA LEAFLET ────────────────────────────────────────────────────────────
+   height y width al 100% hacen que el mapa de Leaflet llene completamente
+   el contenedor .mapa-container.                                                */
 
 .leaflet-container {
   height: 100%;
@@ -124,7 +169,8 @@ html, body, #root {
   border-radius: 10px;
 }
 
-.select-discapacidad{
+/* Select alternativo utilizado en algun punto del mapa o del panel. */
+.select-discapacidad {
   width: 100%;
   margin-top: 8px;
   padding: 8px 10px;
@@ -138,30 +184,41 @@ html, body, #root {
   transition: all 0.2s ease;
 }
 
-.select-discapacidad:hover{
+.select-discapacidad:hover {
   border-color: #3b82f6;
 }
 
-.select-discapacidad:focus{
+.select-discapacidad:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-/* responsive */
+/* ── RESPONSIVE DEL HOME ─────────────────────────────────────────────────────
+   Por debajo de 900px el mapa y el panel se apilan verticalmente en lugar de
+   estar lado a lado, ya que en pantallas estrechas el mapa quedaria demasiado
+   pequeno si comparte el ancho con el panel.                                    */
 
 @media (max-width: 900px) {
 
+  /* flex-direction: column convierte el layout horizontal en vertical. */
   .app-container {
     flex-direction: column;
   }
 
+  /* El mapa ocupa el 52% de la altura disponible en el contenedor apilado. */
   .mapa-container {
-    height: 60%;
+    height: 52%;
+    flex-shrink: 0;
   }
 
+  /* El panel ocupa el 48% restante. Se aumentó desde 40% a 48% para que
+     al mostrar pocos registros (incluso uno solo) el contenido no quede
+     cortado y los filtros sean completamente visibles.
+     flex-shrink: 0 evita que el panel se comprima por debajo de ese valor. */
   .panel-container {
-    height: 40%;
+    height: 48%;
+    flex-shrink: 0;
   }
 
 }
