@@ -121,6 +121,13 @@ export default function Mapa({
       )}
 
       {sectores && (
+        // onEachFeature es un callback de Leaflet que se ejecuta una vez por cada sector del GeoJSON.
+        // "feature" contiene los datos del sector (propiedades como Codigo, Sector, Vereda).
+        // "layer" es el objeto de Leaflet que representa la forma geografica dibujada en el mapa.
+        // layer.on({ click: ... }) registra el evento de clic sobre esa forma para:
+        //   1. Marcar ese sector como seleccionado (cambia su estilo visual via estiloSectores).
+        //   2. Notificar al componente padre (Home) que se selecciono ese sector,
+        //      pasando el codigo, nombre y vereda para actualizar los filtros del panel lateral.
         <GeoJSON
           data={sectores}
           style={estiloSectores}
@@ -140,6 +147,14 @@ export default function Mapa({
         />
       )}
 
+      {/* Por cada sector del GeoJSON se coloca un Marker con un icono numerico
+          que muestra cuantas personas activas hay registradas en ese sector.
+          - getBounds().getCenter() calcula el punto central del poligono del sector
+            para posicionar el marcador en el medio de la forma.
+          - personas.filter(p => p.cod_sector === codigo) cruza los datos del backend
+            con el codigo del sector del GeoJSON para obtener el conteo.
+          - El Marker comparte el mismo evento click que el poligono para que al pulsar
+            el numero tambien se seleccione el sector y se actualicen los filtros. */}
       {sectores &&
         sectores.features.map((feature: any, index: number) => {
           const codigo = feature.properties.Codigo;
@@ -165,7 +180,9 @@ export default function Mapa({
           );
         })}
 
-      {/* Leyenda de veredas */}
+      {/* Leyenda de veredas: cuadro flotante en la esquina superior izquierda del mapa
+          que muestra la correspondencia entre colores y nombres de vereda.
+          zIndex: 1000 garantiza que quede por encima de las capas del mapa de Leaflet. */}
       <div style={{
         position: "absolute",
         top: "10px",

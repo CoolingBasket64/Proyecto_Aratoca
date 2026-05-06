@@ -142,9 +142,6 @@ const cambiarEstadoAdmin = async (req, res) => {
     const { id } = req.params;
     const { estado } = req.body;
 
-    console.log("ID:", id);
-    console.log("Estado:", estado);
-
     await cambiarEstadoAdminDB(id, estado);
     res.json({ mensaje: "Estado actualizado" });
 

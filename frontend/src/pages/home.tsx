@@ -57,10 +57,6 @@ export default function Home() {
       )].sort()
     : [];
 
-  console.log("🔍 DEBUG lista[0]:", lista[0]);
-  console.log("🔍 DEBUG urbanos:", lista.filter(p => p.zona === "URBANO").map(p => ({ zona: p.zona, barrio: p.barrio })));
-  console.log("🔍 DEBUG barriosDisponibles:", barriosDisponibles);
-
   const personasFiltradas = lista.filter((p) => {
     if (p.activo !== 1) return false;
 

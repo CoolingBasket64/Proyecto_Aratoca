@@ -1,3 +1,18 @@
+/* ── ESTILOS BASE GENERADOS POR VITE ─────────────────────────────────────────
+   Este archivo es el CSS global de arranque que genera Vite al crear el proyecto.
+   Define fuentes, colores base y estilos minimos para elementos HTML comunes.
+   Los estilos especificos de cada pagina o componente estan en App.css,
+   login.css y dashboard.css.                                                    */
+
+/* ── VARIABLES Y TIPOGRAFIA GLOBAL ──────────────────────────────────────────
+   :root aplica estas propiedades como valores predeterminados a todo el documento.
+   font-synthesis: none evita que el navegador genere versiones falsas de negrita
+   o italica cuando la fuente no las incluye de forma nativa.
+   text-rendering: optimizeLegibility mejora el espaciado entre letras en pantallas
+   de alta densidad de pixeles.
+   -webkit-font-smoothing y -moz-osx-font-smoothing suavizan el renderizado
+   de fuentes en macOS y algunos navegadores basados en WebKit.                  */
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,11 +28,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Garantiza que el arbol html > body > #root ocupe toda la ventana. */
 html, body, #root {
   height: 100%;
   margin: 0;
 }
 
+/* Estilo base para todos los enlaces del proyecto. */
 a {
   font-weight: 500;
   color: #646cff;
@@ -27,6 +44,7 @@ a:hover {
   color: #535bf2;
 }
 
+/* min-width: 320px es el ancho minimo soportado (equivale al telefono mas pequeno comun). */
 body {
   margin: 0;
   min-width: 320px;
@@ -38,6 +56,8 @@ h1 {
   line-height: 1.1;
 }
 
+/* Estilos base para todos los botones del proyecto.
+   Los componentes sobreescriben estas reglas con clases mas especificas. */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -57,6 +77,8 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Ajusta colores para el modo claro del sistema operativo.
+   prefers-color-scheme detecta si el usuario tiene el tema claro activado. */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

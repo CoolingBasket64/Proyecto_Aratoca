@@ -31,7 +31,6 @@ export default function EditarDiscapacitado() {
   const cargarPersonas = async () => {
     try {
       const data = await obtenerPersonas();
-      console.log(data);
       setPersonas(data);
     } catch (error) {
       console.error(error);

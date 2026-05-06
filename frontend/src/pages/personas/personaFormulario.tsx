@@ -200,11 +200,9 @@ export default function CrearDiscapacitado() {
         await editarPersona(Number(id), dataToSend);
         setMensaje("Persona actualizada correctamente");
       } else {
-        console.log(dataToSend)
         await crearPersona(dataToSend);
         setMensaje("Persona creada correctamente");
       }
-      console.log("DATA FINAL:", dataToSend);
       // Redirige al dashboard despues de 2 segundos para que el usuario vea el mensaje
       setTimeout(() => navigate("/dashboard"), 2000);
 

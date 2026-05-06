@@ -73,9 +73,6 @@ const obtenerAdminsDB = () => {
 const cambiarEstadoAdminDB = (id, estado) => {
   return new Promise((resolve, reject) => {
 
-    console.log("DB -> ID:", id);
-    console.log("DB -> Estado:", estado);
-
     const sql = "UPDATE usuarios SET estado = ? WHERE id_usuario = ?";
 
     db.query(sql, [estado, id], (err, result) => {
