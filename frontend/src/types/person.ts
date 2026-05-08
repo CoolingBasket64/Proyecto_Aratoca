@@ -41,6 +41,8 @@ export interface Persona {
   cod_sector:       string;  // Codigo del sector geografico, se usa para cruzar con el GeoJSON del mapa
   sector:           string;  // Nombre del sector
   barrio?:          string;  // Barrio (solo zona URBANA)
+  finca?:           string;
+  direccion?:       string;
   latitud:          number;
   longitud:         number;
   tiene_cuidador:   number | boolean; // Llega como 1/0 desde MySQL, o true/false desde el formulario

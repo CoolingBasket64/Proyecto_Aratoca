@@ -158,7 +158,8 @@ export default function Mapa({
       {sectores &&
         sectores.features.map((feature: any, index: number) => {
           const codigo = feature.properties.Codigo;
-          const cantidad = personas.filter(p => p.cod_sector === codigo).length;
+          const nombre = feature.properties.Sector;
+          const cantidad = personas.filter(p => p.cod_sector === codigo || p.sector?.toUpperCase() === nombre?.toUpperCase()).length;
           const centro = L.geoJSON(feature).getBounds().getCenter();
           return (
             <Marker

@@ -55,6 +55,8 @@ const obtenerPersonasDB = () => {
         u.cod_sector,
         u.sector,
         u.barrio,
+        u.finca,
+        u.direccion,
         c.cod_tipo_doc        AS cuidador_cod_tipo_doc,
         tc.descripcion_min    AS cuidador_descripcion_min,
         c.primer_nombre       AS cuidador_primer_nombre,

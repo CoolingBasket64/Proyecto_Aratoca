@@ -80,7 +80,7 @@ export default function Home() {
     const cumpleBarrio =
       !esZonaUrbana || filtroBarrio === "" || p.barrio === filtroBarrio;
 
-    return cumpleDiscapacidad && cumpleBarrio && cumpleVeredaFn(p) && p.cod_sector === sectorSeleccionado;
+    return cumpleDiscapacidad && cumpleBarrio && cumpleVeredaFn(p) && (p.cod_sector === sectorSeleccionado || p.sector?.toUpperCase() === nombreSector?.toUpperCase());
   });
 
   const totalPersonas = lista.filter((p) => {
