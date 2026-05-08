@@ -1,54 +1,95 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { login } from "../services/usuarioService";
-import "../login.css";
+import { login, recuperarContrasena } from "../services/usuarioService";
+import "../styles/login.css";
 
 export default function Login() {
-
-  // useNavigate retorna la funcion "navigate" para cambiar de ruta programaticamente.
   const navigate = useNavigate();
 
-  // useState crea variables reactivas: cuando su valor cambia, React vuelve a renderizar el componente.
-  // El primer valor es el estado actual, el segundo es la funcion para actualizarlo.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Controla si mostramos el formulario de recuperacion o el de login
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [recoverySent, setRecoverySent] = useState(false);
+
   const handleLogin = async () => {
     try {
-      // Llama al servicio que hace fetch POST a /api/usuarios/login con las credenciales.
-      // Si las credenciales son incorrectas, el servicio lanza un Error y saltamos al catch.
       const data = await login(email, password);
-
-      // Guardamos el token JWT en localStorage para usarlo en futuras peticiones al backend.
-      // El token se envia automaticamente en cada fetch a traves de authHeaders().
       localStorage.setItem("token", data.token);
-
-      // Guardamos los datos del usuario (nombre, email, rol) para mostrarlos en la UI.
-      // JSON.stringify convierte el objeto a string porque localStorage solo guarda texto.
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
-
-      // "replace: true" evita que el usuario pueda volver al login con el boton "atras".
-      // Despues de login, /login ya no debe ser accesible presionando atras.
       navigate("/dashboard", { replace: true });
-
       alert("Login exitoso");
-
     } catch (error: any) {
-      // error.message contiene el mensaje que lanzo el servicio (ej: "Usuario o contrasena incorrectos")
       alert(error.message);
     }
   };
 
+  const handleRecovery = async () => {
+  if (!recoveryEmail.trim()) {
+    alert("Por favor ingresa tu email.");
+    return;
+  }
+  try {
+    await recuperarContrasena(recoveryEmail); // ← llamada real al backend
+    setRecoverySent(true);
+  } catch (error: any) {
+    alert(error.message);
+  }
+};
+
+  // ── Vista: Recuperar contraseña ──────────────────────────────────────────
+  if (showRecovery) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+
+          <button
+            className="btn-volver"
+            onClick={() => { setShowRecovery(false); setRecoverySent(false); setRecoveryEmail(""); }}
+          >
+            ← Volver al inicio
+          </button>
+
+          <center><h2>Recuperar contraseña</h2></center>
+
+          {recoverySent ? (
+            // Mensaje de confirmacion tras enviar el email
+            <p className="recovery-success">
+              ✓ Revisa tu correo. Te enviamos un enlace para restablecer tu contraseña.
+            </p>
+          ) : (
+            <>
+              <p className="recovery-hint">
+                Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.
+              </p>
+
+              <input
+                type="email"
+                placeholder="Email"
+                value={recoveryEmail}
+                onChange={(e) => setRecoveryEmail(e.target.value)}
+              />
+
+              <button onClick={handleRecovery}>
+                Enviar enlace
+              </button>
+            </>
+          )}
+
+        </div>
+      </div>
+    );
+  }
+
+  // ── Vista: Login ─────────────────────────────────────────────────────────
   return (
     <div className="login-page">
-
       <div className="login-card">
 
         <center><h2>Iniciar sesion</h2></center>
 
-        {/* Inputs controlados: su valor viene del estado de React (value={email}),
-            y cada tecla que el usuario presiona actualiza el estado (onChange).
-            Esto permite que React siempre tenga acceso al valor actual del input. */}
         <input
           type="text"
           placeholder="Email"
@@ -63,6 +104,14 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {/* Enlace de recuperacion debajo del input de contraseña */}
+        <span
+          className="recovery-link"
+          onClick={() => setShowRecovery(true)}
+        >
+          ¿Olvidaste tu contraseña?
+        </span>
+
         <button onClick={handleLogin}>
           Ingresar
         </button>
@@ -75,7 +124,6 @@ export default function Login() {
         </button>
 
       </div>
-
     </div>
   );
 }

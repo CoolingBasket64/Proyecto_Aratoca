@@ -1,16 +1,17 @@
 // bcrypt es una libreria de hashing de contrasenas.
 // "Hashear" significa convertir una contrasena en una cadena irreversible.
 // Nunca se guarda la contrasena original en la base de datos, solo el hash.
+// crypto es un modulo nativo de Node: genera tokens aleatorios seguros
 const bcrypt = require("bcrypt");
-
-// jsonwebtoken permite generar y verificar tokens JWT.
-// Al hacer login exitoso, se genera un token que el cliente guarda y envia en cada peticion.
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 const {
-  loginUsuario, crearAdminDB, cambiarEstadoAdminDB, editarAdminDB, obtenerAdminPorIdDB
+  loginUsuario, crearAdminDB, cambiarEstadoAdminDB, editarAdminDB,
+  obtenerAdminPorIdDB, obtenerAdminsDB,
+  guardarTokenRecuperacionDB, buscarPorTokenRecuperacionDB, actualizarPasswordDB
 } = require("../models/usuarioModel");
-
 // ─────────────────────────────────────────────────────────────────────────────
 // LOGIN
 // POST /api/usuarios/login
@@ -116,8 +117,6 @@ const crearAdmin = async (req, res) => {
   }
 };
 
-// Se importa aqui porque fue agregado despues del bloque inicial de importaciones
-const { obtenerAdminsDB } = require("../models/usuarioModel");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OBTENER TODOS LOS ADMINISTRADORES
@@ -200,5 +199,88 @@ const obtenerAdminPorId = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SOLICITAR RECUPERACION DE CONTRASEÑA
+// POST /api/usuarios/recuperar-contrasena
+// Genera un token temporal y envia el enlace al email del usuario.
+// ─────────────────────────────────────────────────────────────────────────────
+const recuperarContrasena = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const result = await loginUsuario(email);
+
+    if (result.length === 0) {
+      return res.json({ mensaje: "Si el correo existe, recibirás un enlace." });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiracion = new Date(Date.now() + 60 * 60 * 1000);
+
+    await guardarTokenRecuperacionDB(email, token, expiracion);
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // ↓ aquí va esa línea, dentro de esta función
+    const enlace = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    await transporter.sendMail({
+      from: `"Soporte" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Recuperar contraseña",
+      html: `
+        <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+        <p>Haz clic en el siguiente enlace (válido por 1 hora):</p>
+        <a href="${enlace}">${enlace}</a>
+        <p>Si no solicitaste esto, ignora este correo.</p>
+      `
+    });
+
+    res.json({ mensaje: "Si el correo existe, recibirás un enlace." });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al procesar la solicitud" });
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESETEAR CONTRASEÑA
+// POST /api/usuarios/reset-password
+// Recibe el token del enlace y la nueva contrasena, y la actualiza en la BD.
+// ─────────────────────────────────────────────────────────────────────────────
+const resetPassword = async (req, res) => {
+  const { token, nuevaPassword } = req.body;
+  try {
+    // Busca el usuario que tenga ese token Y que no haya expirado
+    const usuario = await buscarPorTokenRecuperacionDB(token);
+    if (!usuario) {
+      return res.status(400).json({ mensaje: "El enlace es inválido o ya expiró." });
+    }
+
+    if (nuevaPassword.length < 6) {
+      return res.status(400).json({ mensaje: "La contraseña debe tener mínimo 6 caracteres." });
+    }
+
+    const hashedPassword = await bcrypt.hash(nuevaPassword, 10);
+    await actualizarPasswordDB(usuario.id_usuario, hashedPassword);
+
+    res.json({ mensaje: "Contraseña actualizada correctamente." });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al resetear la contraseña" });
+  }
+};
+
 // Exportamos todas las funciones para que el archivo de rutas pueda usarlas.
-module.exports = { login, crearAdmin, cambiarEstadoAdmin, obtenerAdmins, editarAdmin, obtenerAdminPorId };
+module.exports = {
+  login, crearAdmin, cambiarEstadoAdmin, obtenerAdmins, editarAdmin,
+  obtenerAdminPorId, recuperarContrasena, resetPassword
+};

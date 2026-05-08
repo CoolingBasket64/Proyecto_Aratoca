@@ -17,6 +17,7 @@ import GestionarDiscapacitado from "./pages/personas/gestionarDiscapacitado";
 import CrearAdmin             from "./pages/usuarios/crearAdmin";
 import GestionarAdmin         from "./pages/usuarios/gestionarAdmin";
 import Reportes               from "./pages/reportes";
+import ResetPassword          from "./pages/ResetPassword";
 
 import "./App.css";
 
@@ -65,6 +66,7 @@ function App() {
         <Route path="/reportes" element={
           <ProtectedRoute><Reportes /></ProtectedRoute>
         } />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
       </Routes>
     </BrowserRouter>

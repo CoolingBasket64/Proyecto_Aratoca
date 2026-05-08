@@ -133,4 +133,63 @@ const obtenerAdminPorIdDB = (id) => {
   });
 };
 
-module.exports = { loginUsuario, crearAdminDB, cambiarEstadoAdminDB, obtenerAdminsDB, editarAdminDB, obtenerAdminPorIdDB };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GUARDAR TOKEN DE RECUPERACION
+// Se guarda un token temporal en la BD para validar el enlace que llega al email.
+// ─────────────────────────────────────────────────────────────────────────────
+const guardarTokenRecuperacionDB = (email, token, expiracion) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      UPDATE usuarios
+      SET reset_token = ?, reset_token_expira = ?
+      WHERE email = ?
+    `;
+    db.query(sql, [token, expiracion, email], (err, result) => {
+      if (err) reject(err);
+      else     resolve(result);
+    });
+  });
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSCAR USUARIO POR TOKEN DE RECUPERACION
+// Verifica que el token exista y no haya expirado.
+// ─────────────────────────────────────────────────────────────────────────────
+const buscarPorTokenRecuperacionDB = (token) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT id_usuario, email
+      FROM usuarios
+      WHERE reset_token = ? AND reset_token_expira > ?
+    `;
+    db.query(sql, [token, new Date()], (err, result) => {
+      if (err) reject(err);
+      else     resolve(result[0]);
+    });
+  });
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACTUALIZAR CONTRASEÑA Y LIMPIAR TOKEN
+// Una vez reseteada la contrasena, el token se elimina para que no pueda reutilizarse.
+// ─────────────────────────────────────────────────────────────────────────────
+const actualizarPasswordDB = (id, hashedPassword) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      UPDATE usuarios
+      SET password = ?, reset_token = NULL, reset_token_expira = NULL
+      WHERE id_usuario = ?
+    `;
+    db.query(sql, [hashedPassword, id], (err, result) => {
+      if (err) reject(err);
+      else     resolve(result);
+    });
+  });
+};
+
+module.exports = {
+  loginUsuario, crearAdminDB, cambiarEstadoAdminDB, obtenerAdminsDB,
+  editarAdminDB, obtenerAdminPorIdDB,
+  guardarTokenRecuperacionDB, buscarPorTokenRecuperacionDB, actualizarPasswordDB
+};

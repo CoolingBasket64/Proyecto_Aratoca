@@ -90,28 +90,30 @@ const obtenerPersonasDB = () => {
 // Si ya existe lo reutiliza, si no existe lo crea
 const crearCuidador = (idPersona, cuidador) => {
   return new Promise((resolve, reject) => {
-    const sqlBuscar = `
-      SELECT id_cuidador FROM cuidadores
-      WHERE cod_tipo_doc = ? AND documento = ?
-    `;
+    const sqlBuscar = `SELECT id_cuidador FROM cuidadores WHERE cod_tipo_doc = ? AND documento = ?`;
+    
     db.query(sqlBuscar, [cuidador.cod_tipo_doc, cuidador.documento], (err, result) => {
       if (err) return reject(err);
 
       if (result.length > 0) {
-        // El cuidador ya existe en la base de datos, usa su ID sin crear duplicado
-        const idCuidadorExistente = result[0].id_cuidador;
-        resolve(idCuidadorExistente);
+        resolve(result[0].id_cuidador);
       } else {
-        // El cuidador no existe, se crea uno nuevo
-        const nombreCompleto = `${cuidador.primer_nombre} ${cuidador.segundo_nombre} ${cuidador.primer_apellido} ${cuidador.segundo_apellido}`;
+        const nombreCompleto = [
+          cuidador.primer_nombre,
+          cuidador.segundo_nombre,
+          cuidador.primer_apellido,
+          cuidador.segundo_apellido
+        ].filter(Boolean).join(" "); // ← evita espacios dobles si hay campos vacíos
 
-        // Calcula la edad a partir de la fecha de nacimiento
-        const fechaNacimiento = new Date(cuidador.fecha_nacimiento);
-        const hoy = new Date();
-        let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-        const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-        // Si aun no ha pasado el mes de cumpleanos este anio, se resta un ano
-        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
+        // Calcula edad solo si hay fecha válida
+        let edad = null;
+        if (cuidador.fecha_nacimiento) {
+          const fechaNacimiento = new Date(cuidador.fecha_nacimiento);
+          const hoy = new Date();
+          edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+          const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+          if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
+        }
 
         const sqlInsert = `
           INSERT INTO cuidadores
@@ -122,23 +124,22 @@ const crearCuidador = (idPersona, cuidador) => {
 
         const values = [
           idPersona,
-          cuidador.cod_tipo_doc,
-          cuidador.documento,
-          cuidador.primer_apellido,
-          cuidador.segundo_apellido,
-          cuidador.primer_nombre,
-          cuidador.segundo_nombre,
-          nombreCompleto,
-          cuidador.fecha_nacimiento,
+          cuidador.cod_tipo_doc || null,
+          cuidador.documento || null,
+          cuidador.primer_apellido || null,
+          cuidador.segundo_apellido || null,
+          cuidador.primer_nombre || null,
+          cuidador.segundo_nombre || null,
+          nombreCompleto || null,
+          cuidador.fecha_nacimiento || null, // ← null si viene vacío
           edad,
-          cuidador.sexo,
-          cuidador.parentesco,
-          cuidador.celular
+          cuidador.sexo || null,
+          cuidador.parentesco || null,
+          cuidador.celular || null
         ];
 
         db.query(sqlInsert, values, (err2, resultInsert) => {
           if (err2) return reject(err2);
-          // insertId es el ID generado automaticamente por MySQL para el nuevo registro
           resolve(resultInsert.insertId);
         });
       }
@@ -149,54 +150,61 @@ const crearCuidador = (idPersona, cuidador) => {
 // Actualiza el cuidador de una persona si ya tiene uno, o lo crea si no tiene
 const actualizarCuidador = (idPersona, cuidador) => {
   return new Promise((resolve, reject) => {
-
-    // Primero verifica si ya existe un cuidador para esta persona
     const sqlBuscar = `SELECT id_cuidador FROM cuidadores WHERE id_persona = ?`;
 
     db.query(sqlBuscar, [idPersona], (err, result) => {
       if (err) return reject(err);
 
-      const nombreCompleto = `${cuidador.primer_nombre} ${cuidador.segundo_nombre} ${cuidador.primer_apellido} ${cuidador.segundo_apellido}`;
+      // Nombre completo sin espacios dobles si hay campos vacíos
+      const nombreCompleto = [
+        cuidador.primer_nombre,
+        cuidador.segundo_nombre,
+        cuidador.primer_apellido,
+        cuidador.segundo_apellido
+      ].filter(Boolean).join(" ");
 
-      // Calcula la edad del cuidador
-      const fechaNacimiento = new Date(cuidador.fecha_nacimiento);
-      const hoy = new Date();
-      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
+      // Calcula edad solo si hay fecha válida
+      let edad = null;
+      if (cuidador.fecha_nacimiento) {
+        const fechaNacimiento = new Date(cuidador.fecha_nacimiento);
+        const hoy = new Date();
+        edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
+      }
 
       if (result.length > 0) {
-        // Ya existe un cuidador para esta persona: se actualiza
+        // Ya existe cuidador: actualiza
         const sqlUpdate = `
           UPDATE cuidadores SET
-            cod_tipo_doc=?,
-            documento=?,
-            primer_nombre=?,
-            segundo_nombre=?,
-            primer_apellido=?,
-            segundo_apellido=?,
-            nombre_completo=?,
-            fecha_nacimiento=?,
-            edad=?,
-            sexo=?,
-            parentesco=?,
-            celular=?
-          WHERE id_persona=?
+            cod_tipo_doc = ?,
+            documento = ?,
+            primer_nombre = ?,
+            segundo_nombre = ?,
+            primer_apellido = ?,
+            segundo_apellido = ?,
+            nombre_completo = ?,
+            fecha_nacimiento = ?,
+            edad = ?,
+            sexo = ?,
+            parentesco = ?,
+            celular = ?
+          WHERE id_persona = ?
         `;
 
         db.query(sqlUpdate, [
-          cuidador.cod_tipo_doc,
-          cuidador.documento,
-          cuidador.primer_nombre,
-          cuidador.segundo_nombre,
-          cuidador.primer_apellido,
-          cuidador.segundo_apellido,
-          nombreCompleto,
-          cuidador.fecha_nacimiento,
+          cuidador.cod_tipo_doc || null,
+          cuidador.documento || null,
+          cuidador.primer_nombre || null,
+          cuidador.segundo_nombre || null,
+          cuidador.primer_apellido || null,
+          cuidador.segundo_apellido || null,
+          nombreCompleto || null,
+          cuidador.fecha_nacimiento || null, // ← null si viene vacío
           edad,
-          cuidador.sexo,
-          cuidador.parentesco,
-          cuidador.celular,
+          cuidador.sexo || null,
+          cuidador.parentesco || null,
+          cuidador.celular || null,
           idPersona
         ], (err2, result2) => {
           if (err2) return reject(err2);
@@ -204,12 +212,11 @@ const actualizarCuidador = (idPersona, cuidador) => {
         });
 
       } else {
-        // No existe cuidador para esta persona: se crea uno nuevo
+        // No existe cuidador: crea uno nuevo
         crearCuidador(idPersona, cuidador)
           .then(resolve)
           .catch(reject);
       }
-
     });
   });
 };

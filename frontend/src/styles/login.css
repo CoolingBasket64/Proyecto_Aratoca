@@ -69,3 +69,31 @@ html, body, #root {
 .btn-volver:hover {
   background: #d1d5db;
 }
+
+.recovery-link {
+  font-size: 13px;
+  color: #2563EB;
+  cursor: pointer;
+  text-align: right;
+  margin-bottom: 4px;
+}
+
+.recovery-link:hover {
+  text-decoration: underline;
+}
+
+.recovery-hint {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.recovery-success {
+  font-size: 14px;
+  color: #16a34a;
+  text-align: center;
+  background: #f0fdf4;
+  padding: 12px;
+  border-radius: 8px;
+}

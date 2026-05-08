@@ -442,3 +442,18 @@ INSERT INTO cuidadores (id_cuidador, id_persona, cod_tipo_doc, documento, primer
 -- ----------------------------------------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE usuarios
+ADD COLUMN reset_token VARCHAR(64) NULL,
+ADD COLUMN reset_token_expira DATETIME NULL;
+
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+ALTER TABLE ubicaciones MODIFY id_ubicacion INT NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 300;
+ALTER TABLE personas_discapacidad MODIFY id_persona INT NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 300;
+ALTER TABLE cuidadores MODIFY id_cuidador INT NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 300;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE cuidadores MODIFY celular VARCHAR(20);

@@ -86,3 +86,33 @@ export const editarAdmin = async (id: number, data: any) => {
   if (!response.ok) throw new Error("Error actualizando admin");
   return await response.json();
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RECUPERAR CONTRASEÑA (ruta publica, no necesita token)
+// ─────────────────────────────────────────────────────────────────────────────
+export const recuperarContrasena = async (email: string) => {
+  const response = await fetch(`${API.usuarios}/recuperar-contrasena`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.mensaje || "Error al enviar el correo");
+  return data;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESET PASSWORD (ruta publica, no necesita token)
+// ─────────────────────────────────────────────────────────────────────────────
+export const resetPassword = async (token: string, nuevaPassword: string) => {
+  const response = await fetch(`${API.usuarios}/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, nuevaPassword })
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.mensaje || "Error al resetear contraseña");
+  return data;
+};

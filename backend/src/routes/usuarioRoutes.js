@@ -11,14 +11,20 @@ const {
   cambiarEstadoAdmin, // Activa o inactiva un administrador
   obtenerAdmins,      // Lista todos los administradores
   editarAdmin,        // Actualiza nombre, email y opcionalmente contrasena
-  obtenerAdminPorId   // Devuelve los datos de un administrador especifico
+  obtenerAdminPorId,   // Devuelve los datos de un administrador especifico
+  recuperarContrasena,
+  resetPassword
 } = require("../controllers/usuarioController");
 
 // ─── RUTA PUBLICA ──────────────────────────────────────────────────────────────
 // POST /api/usuarios/login
+// POST /api/recuperar-contrasena
+// POST /api/reset-password
 // Esta ruta no requiere token porque es el punto de entrada: el usuario aun no tiene token.
 // Recibe email y password, los verifica y devuelve un JWT si las credenciales son correctas.
 router.post("/login", login);
+router.post("/recuperar-contrasena", recuperarContrasena);
+router.post("/reset-password", resetPassword);
 
 // ─── RUTAS PRIVADAS ────────────────────────────────────────────────────────────
 // Todas las rutas definidas despues de esta linea requeriran un JWT valido.
@@ -39,5 +45,6 @@ router.put("/:id", editarAdmin);
 
 // GET /api/usuarios/:id -> datos de un administrador especifico por su ID
 router.get("/:id", obtenerAdminPorId);
+
 
 module.exports = router;
